@@ -1,0 +1,8 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.<bundle id>",
+  "teamIdentifier": "<your team identifier>",
+  "organizationName": "<your organization name>",
+  "description": "A localizable description of your pass. To do so, put here a placeholder.",
+  "generic": {}
+}

@@ -1,20 +1,19 @@
 const { PKPass } = require("passkit-generator");
+var fs = require("fs");
 
 exports.handler = async function (event, context) {
   try {
-    const wwdr = "";
-    const signerCert = "";
-    const signerKey = "";
-    const signerKeyPassphrase = "";
+    const wwdr = fs.readFileSync("./certs/wwdr.pem");
+    const signerCert = fs.readFileSync("./certs/pass.pem");
+    const signerKey = fs.readFileSync("./certs/passkit.key");
 
     const pass = await PKPass.from(
       {
-        model: "./passModels/myFirstModel.pass",
+        model: "./hamradiowallet.pass",
         certificates: {
           wwdr,
           signerCert,
           signerKey,
-          signerKeyPassphrase,
         },
       },
       {
@@ -25,6 +24,7 @@ exports.handler = async function (event, context) {
     pass.setBarcodes("1234567890");
 
     const buffer = pass.getAsBuffer();
+    fs.writeFileSync("out.pkpass", buffer);
     return buffer;
   } catch (e) {
     console.error(e);
