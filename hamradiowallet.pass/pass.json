@@ -3,7 +3,6 @@
   "passTypeIdentifier": "pass.com.hamradiowallet",
   "teamIdentifier": "QW53582T5V",
   "organizationName": "hamradiowallet.com",
-  "description": "An app to add FCC Amateur Radio Licenses to Apple Wallet.",
-  "serialNumber": "AAGH44625236dddaffbdz",
-  "generic": {}
+  "description": "FCC Amateur Radio License Information.",
+  "serialNumber": "AAGH4462236dddaffbdz"
 }
