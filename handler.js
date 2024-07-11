@@ -7,19 +7,14 @@ exports.handler = async function (event, context) {
     const signerCert = fs.readFileSync("./certs/pass.pem");
     const signerKey = fs.readFileSync("./certs/passkit.key");
 
-    const pass = await PKPass.from(
-      {
-        model: "./hamradiowallet.pass",
-        certificates: {
-          wwdr,
-          signerCert,
-          signerKey,
-        },
+    const pass = await PKPass.from({
+      model: "./hamradiowallet.pass",
+      certificates: {
+        wwdr,
+        signerCert,
+        signerKey,
       },
-      {
-        serialNumber: "AAGH44625236dddaffbda",
-      }
-    );
+    });
 
     pass.setBarcodes("1234567890");
 

@@ -1,8 +1,9 @@
 {
   "formatVersion": 1,
-  "passTypeIdentifier": "pass.<bundle id>",
-  "teamIdentifier": "<your team identifier>",
-  "organizationName": "<your organization name>",
-  "description": "A localizable description of your pass. To do so, put here a placeholder.",
+  "passTypeIdentifier": "pass.com.hamradiowallet",
+  "teamIdentifier": "QW53582T5V",
+  "organizationName": "hamradiowallet.com",
+  "description": "An app to add FCC Amateur Radio Licenses to Apple Wallet.",
+  "serialNumber": "AAGH44625236dddaffbdz",
   "generic": {}
 }
