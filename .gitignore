@@ -1,4 +1,5 @@
 certs
+.DS_Store
 
 # Logs
 logs

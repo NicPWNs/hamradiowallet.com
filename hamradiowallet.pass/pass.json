@@ -3,6 +3,7 @@
   "passTypeIdentifier": "pass.com.hamradiowallet",
   "teamIdentifier": "QW53582T5V",
   "organizationName": "hamradiowallet.com",
-  "description": "FCC Amateur Radio License Information.",
-  "serialNumber": "AAGH4462236dddaffbdz"
+  "description": "FCC Amateur Radio License.",
+  "serialNumber": "AAGH4462236dddaffbdz",
+  "generic": {}
 }
