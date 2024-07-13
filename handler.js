@@ -30,10 +30,14 @@ async function getData(callsign) {
   let expireDate = licenseData[row].split("|")[8];
   let effectiveDate = licenseData[row].split("|")[42];
 
+  grantDate = new Date(grantDate).toISOString();
+  expireDate = new Date(expireDate).toISOString();
+  effectiveDate = new Date(effectiveDate).toISOString();
+
   data = {
     frn: frn,
     callsign: callsign,
-    name: firstName.concat(lastName),
+    name: firstName + " " + lastName,
     privileges: "General",
     grantDate: grantDate,
     effectiveDate: effectiveDate,

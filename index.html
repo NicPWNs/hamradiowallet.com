@@ -1,13 +1,39 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>HAM Radio Wallet</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-    Under Construction!
-    </br></br>
-    <a href="./hamradiowallet.pkpass"><img src="./US-UK_Add_to_Apple_Wallet_RGB_101421.svg"></a>
+    <div class="cardContainer">
+        <div class="card" id="card">
+            <div class="card--front side">
+                <img src="./images/pass.jpg"></img>
+            </div>
+            <div class="card--back side" id="back">
+                <form name="enterData">
+                    Enter your FCC data below:
+                    </br></br></br></br>
+                    CALL SIGN</br>
+                    <input type="text" name="callsign" id="callsign">
+                    <span class="error" id="callError">Enter a valid call sign.</span>
+                    </br></br></br></br>
+                    ZIP CODE
+                    </br>
+                    <input type="text" name="zipcode" id="zipcode">
+                    <span class="error" id="zipError">Enter a valid ZIP code.</span>
+                </form>
+            </div>
+        </div>
+    </div>
+    <button id="buttonFlip" type="button" onclick="submitForm()">Get Your Pass</button>
+
+    <script src="./index.js"></script>
 </body>
 
 </html>
