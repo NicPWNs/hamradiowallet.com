@@ -1,5 +1,7 @@
 certs
+data
 .DS_Store
+*.pkpass
 
 # Logs
 logs
