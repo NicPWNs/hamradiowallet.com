@@ -1,3 +1,7 @@
+if (!window.matchMedia("(prefers-color-scheme:dark)").matches) {
+  document.body.style.background = "white";
+}
+
 const card = document.getElementById("card");
 const buttonClick = document.getElementById("buttonFlip");
 
