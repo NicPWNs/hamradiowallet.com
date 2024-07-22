@@ -1,4 +1,5 @@
-const { PKPass } = require("passkit-generator");
+import passkit from "passkit-generator";
+const PKPass = passkit.PKPass;
 var fs = require("fs");
 
 async function getData(callsign) {
@@ -34,7 +35,7 @@ async function getData(callsign) {
   expireDate = new Date(expireDate).toISOString();
   effectiveDate = new Date(effectiveDate).toISOString();
 
-  data = {
+  var data = {
     frn: frn,
     callsign: callsign,
     name: firstName + " " + lastName,
@@ -133,10 +134,21 @@ async function createPass(data) {
 }
 
 exports.handler = async function (event, context) {
-  callsign = "N1CPJ";
-  data = await getData(callsign);
+  var callsign = event.queryStringParameters.callsign;
+  var zipcode = event.queryStringParameters.zipcode;
 
-  pass = await createPass(data);
+  var data = await getData(callsign);
+  var pass = await createPass(data);
+
+  const response = {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+    statusCode: 200,
+    body: pass,
+  };
+
+  return response;
 };
 
 exports.handler();

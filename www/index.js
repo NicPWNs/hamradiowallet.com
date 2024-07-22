@@ -42,14 +42,30 @@ function validateForm() {
 async function submitForm() {
   if (card.classList.contains("card_hover")) {
     if (validateForm()) {
-      var request = new XMLHttpRequest();
-      request.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          window.alert(request.responseText);
-        }
-      };
-      request.open("GET", "filename", true);
-      request.send();
+      const callsign = document.getElementById("callsign").value;
+      const zipcode = document.getElementById("zipcode").value;
+
+      const request = new Request(
+        "https://gwoysu5u27.execute-api.us-east-1.amazonaws.com/hamradiowallet?callsign=" +
+          callsign +
+          "&zipcode=" +
+          zipcode
+      );
+
+      fetch(request)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            throw new Error("API Gateway Error");
+          }
+        })
+        .then((response) => {
+          window.alert(response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }
 }
