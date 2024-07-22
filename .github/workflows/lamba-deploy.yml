@@ -1,0 +1,20 @@
+name: deploy to lambda
+on: [push]
+jobs:
+  deploy_zip:
+    name: deploy lambda function
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v3
+      - name: Zip File
+        run: |
+          cd lambda && zip -r lambdaFunc.zip .
+      - name: Deploy ZIP
+        uses: appleboy/lambda-action@v0.2.0
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+          function_name: hamradiowallet
+          zip_file: lambda/lambdaFunc.zip
