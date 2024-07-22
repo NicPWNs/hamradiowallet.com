@@ -1,4 +1,4 @@
-name: deploy to lambda
+name: Lambda Deploy
 on: [push]
 jobs:
   deploy_zip:
@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: checkout source code
         uses: actions/checkout@v3
-      - name: Zip File
+      - name: ZIP File
         run: |
           cd lambda && zip -r lambdaFunc.zip .
       - name: Deploy ZIP
