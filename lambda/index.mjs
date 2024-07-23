@@ -133,7 +133,7 @@ async function createPass(data) {
   }
 }
 
-exports.handler = async function (event, context) {
+export const handler = async function (event, context) {
   var callsign = event.queryStringParameters.callsign;
   var zipcode = event.queryStringParameters.zipcode;
 
@@ -150,5 +150,3 @@ exports.handler = async function (event, context) {
 
   return response;
 };
-
-exports.handler();
