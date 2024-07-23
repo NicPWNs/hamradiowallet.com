@@ -1,5 +1,6 @@
-const { PKPass } = require("passkit-generator");
-const fs = require("fs");
+import fs from "fs";
+import passkit from "passkit-generator";
+const PKPass = passkit.PKPass;
 
 async function getData(callsign) {
   var userData = fs.readFileSync("./data/EN.dat").toString().split("\n");
