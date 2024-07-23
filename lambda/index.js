@@ -141,7 +141,7 @@ exports.handler = async function (event, context) {
 
   const response = {
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "hamradiowallet.com",
     },
     statusCode: 200,
     body: pass,
