@@ -1,8 +1,28 @@
+import { writeFile } from "node:fs/promises";
+import { Readable } from "node:stream";
+import decompress from "decompress";
 import fs from "fs";
 import passkit from "passkit-generator";
 const PKPass = passkit.PKPass;
 
+async function getDatabase() {
+  const response = await fetch(
+    "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip"
+  );
+  const body = Readable.fromWeb(response.body);
+  await writeFile("database.zip", body);
+
+  decompress("database.zip", "data")
+    .then((files) => {
+      console.log(files);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 async function getData(callsign) {
+  await getDatabase();
   var userData = fs.readFileSync("./data/EN.dat").toString().split("\n");
   var licenseData = fs.readFileSync("./data/HD.dat").toString().split("\n");
 
