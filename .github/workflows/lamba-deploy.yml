@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v3
       - name: ZIP File
         run: |
-          cd lambda && zip -r lambdaFunc.zip ./
+          cd lambda/database && zip -r lambdaHandler.zip ./
       - name: Deploy ZIP
         uses: appleboy/lambda-action@v0.2.0
         with:
@@ -17,4 +17,21 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
           function_name: hamradiowallet-handler
-          zip_file: lambda/lambdaFunc.zip
+          zip_file: lambda/handler/lambdaHandler.zip
+  deploy_database_function:
+    name: Deploy hamradiowallet.com Database Retriever
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v3
+      - name: ZIP File
+        run: |
+          cd lambda/database && zip -r lambdaDatabase.zip ./
+      - name: Deploy ZIP
+        uses: appleboy/lambda-action@v0.2.0
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+          function_name: hamradiowallet-database
+          zip_file: lambda/database/lambdaDatabase.zip
