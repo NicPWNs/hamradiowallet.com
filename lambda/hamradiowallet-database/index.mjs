@@ -1,7 +1,10 @@
 import AWS from "aws-sdk";
 import https from "https";
-import { createWriteStream, promises as fsPromises } from "fs";
-import { createReadStream } from "fs/promises";
+import {
+  createWriteStream,
+  createReadStream,
+  promises as fsPromises,
+} from "fs";
 import { pipeline } from "stream/promises";
 import unzipper from "unzipper";
 
