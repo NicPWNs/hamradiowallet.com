@@ -1,0 +1,22 @@
+{
+  "name": "hamradiowallet-handler",
+  "version": "1.0.0",
+  "description": "> An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicPWNs/hamradiowallet.com.git"
+  },
+  "author": "NicPWNs <nic@nicpwns.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicPWNs/hamradiowallet.com/issues"
+  },
+  "homepage": "https://github.com/NicPWNs/hamradiowallet.com#readme",
+  "dependencies": {
+    "passkit-generator": "^3.1.11"
+  }
+}

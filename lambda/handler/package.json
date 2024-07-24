@@ -1,7 +1,0 @@
-{
-  "main": "index.mjs",
-  "dependencies": {
-    "decompress": "^4.2.1",
-    "passkit-generator": "^3.1.11"
-  }
-}
