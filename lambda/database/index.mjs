@@ -12,8 +12,8 @@ const s3 = new AWS.S3({
 
 // Lambda handler function
 export const handler = async (event) => {
-  url = "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip";
-  bucketName = "database.hamradiowallet.com";
+  const url = "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip";
+  const bucketName = "database.hamradiowallet.com";
 
   // Download and unzip the ZIP file from the URL
   const downloadAndUnzip = async () => {
