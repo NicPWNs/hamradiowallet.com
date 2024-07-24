@@ -34,13 +34,13 @@ export const handler = async (event) => {
 
         unzipStream.on("entry", (entry) => {
           const fileName = entry.path;
-          if (fileName === "file1.txt" || fileName === "file2.txt") {
+          if (fileName === "EN.dat" || fileName === "HD.dat") {
             const filePath = `/tmp/${fileName}`;
             const fileStream = createWriteStream(filePath);
             pipeline(entry, fileStream)
               .then(() => {
                 console.log(`Extracted ${fileName}`);
-                if (fileName === "file2.txt") {
+                if (fileName === "HD.dat") {
                   resolve("/tmp"); // Resolve with the directory path after all necessary files are extracted
                 }
               })
@@ -64,14 +64,14 @@ export const handler = async (event) => {
     const tempDir = await downloadAndUnzip();
 
     // Upload the extracted files to S3 bucket
-    const file1Path = `${tempDir}/file1.txt`;
-    const file2Path = `${tempDir}/file2.txt`;
+    const file1Path = `${tempDir}/EN.dat`;
+    const file2Path = `${tempDir}/HD.dat`;
 
     // Upload file1.txt
     const file1Stream = createReadStream(file1Path);
     const uploadParams1 = {
       Bucket: bucketName,
-      Key: `EN.dat`,
+      Key: "EN.dat",
       Body: file1Stream,
     };
     const result1 = await s3.upload(uploadParams1).promise();
@@ -81,7 +81,7 @@ export const handler = async (event) => {
     const file2Stream = createReadStream(file2Path);
     const uploadParams2 = {
       Bucket: bucketName,
-      Key: `HD.dat`,
+      Key: "HD.dat",
       Body: file2Stream,
     };
     const result2 = await s3.upload(uploadParams2).promise();
