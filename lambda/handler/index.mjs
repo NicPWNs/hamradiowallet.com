@@ -5,21 +5,7 @@ import fs from "fs";
 import passkit from "passkit-generator";
 const PKPass = passkit.PKPass;
 
-async function getDatabase() {
-  const response = await fetch(
-    "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip"
-  );
-  const body = Readable.fromWeb(response.body);
-  await writeFile("/tmp/database.zip", body);
-
-  decompress("/tmp/database.zip", "/tmp/data")
-    .then((files) => {
-      console.log(files);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
+async function getDatabase() {}
 
 async function getData(callsign) {
   await getDatabase();
@@ -153,7 +139,7 @@ async function createPass(data) {
   }
 }
 
-export const handler = async function (event, context) {
+export const handler = async function (event) {
   var callsign = event.queryStringParameters.callsign;
   var zipcode = event.queryStringParameters.zipcode;
 
