@@ -1,25 +1,97 @@
-import { writeFile } from "node:fs/promises";
-import { Readable } from "node:stream";
-import decompress from "decompress";
+import AWS from "aws-sdk";
+import https from "https";
+import { createWriteStream, promises as fsPromises } from "fs";
+import { createReadStream } from "fs/promises";
+import { pipeline } from "stream/promises";
+import unzipper from "unzipper";
 
-async function downloadDatabase() {
-  const response = await fetch(
-    "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip"
-  );
-  const body = Readable.fromWeb(response.body);
-  await writeFile("/tmp/database.zip", body);
+// Configure AWS SDK with your credentials and region
+const s3 = new AWS.S3({
+  region: "us-east-1",
+});
 
-  decompress("/tmp/database.zip", "/tmp/data")
-    .then((files) => {
-      console.log(files);
-    })
-    .catch((error) => {
-      console.log(error);
+// Lambda handler function
+export const handler = async (event) => {
+  url = "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip";
+  bucketName = "database.hamradiowallet.com";
+
+  // Download and unzip the ZIP file from the URL
+  const downloadAndUnzip = async () => {
+    return new Promise((resolve, reject) => {
+      https.get(url, (response) => {
+        if (response.statusCode !== 200) {
+          reject(
+            new Error(
+              `Failed to download file. Status Code: ${response.statusCode}`
+            )
+          );
+          return;
+        }
+        const unzipStream = response.pipe(unzipper.Parse());
+
+        unzipStream.on("entry", (entry) => {
+          const fileName = entry.path;
+          if (fileName === "file1.txt" || fileName === "file2.txt") {
+            const filePath = `/tmp/${fileName}`;
+            const fileStream = createWriteStream(filePath);
+            pipeline(entry, fileStream)
+              .then(() => {
+                console.log(`Extracted ${fileName}`);
+                if (fileName === "file2.txt") {
+                  resolve("/tmp"); // Resolve with the directory path after all necessary files are extracted
+                }
+              })
+              .catch((err) => {
+                reject(err);
+              });
+          } else {
+            entry.autodrain(); // Skip other files
+          }
+        });
+
+        unzipStream.on("error", (err) => {
+          reject(err);
+        });
+      });
     });
-}
+  };
 
-export const handler = async function (event) {
-  downloadDatabase();
+  try {
+    // Download and unzip the ZIP file
+    const tempDir = await downloadAndUnzip();
 
-  return;
+    // Upload the extracted files to S3 bucket
+    const file1Path = `${tempDir}/file1.txt`;
+    const file2Path = `${tempDir}/file2.txt`;
+
+    // Upload file1.txt
+    const file1Stream = createReadStream(file1Path);
+    const uploadParams1 = {
+      Bucket: bucketName,
+      Key: `EN.dat`,
+      Body: file1Stream,
+    };
+    const result1 = await s3.upload(uploadParams1).promise();
+    console.log(`File uploaded successfully. ETag: ${result1.ETag}`);
+
+    // Upload file2.txt
+    const file2Stream = createReadStream(file2Path);
+    const uploadParams2 = {
+      Bucket: bucketName,
+      Key: `HD.dat`,
+      Body: file2Stream,
+    };
+    const result2 = await s3.upload(uploadParams2).promise();
+    console.log(`File uploaded successfully. ETag: ${result2.ETag}`);
+
+    // Clean up extracted files (optional)
+    await fsPromises.unlink(file1Path);
+    await fsPromises.unlink(file2Path);
+
+    console.log("Upload and cleanup complete.");
+    return { message: "Upload and cleanup complete." };
+  } catch (err) {
+    console.error("Error:", err);
+    throw err;
+  }
 };
