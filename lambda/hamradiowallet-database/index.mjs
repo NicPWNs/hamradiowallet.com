@@ -61,13 +61,13 @@ export const handler = async (event) => {
 
   try {
     // Download and unzip the ZIP file
-    const tempDir = await downloadAndUnzip();
+    await downloadAndUnzip();
 
     // Upload the extracted files to S3 bucket
-    const file1Path = `${tempDir}/EN.dat`;
-    const file2Path = `${tempDir}/HD.dat`;
+    const file1Path = "/tmp/EN.dat";
+    const file2Path = "/tmp/HD.dat";
 
-    // Upload file1.txt
+    // Upload EN.dat
     const file1Stream = createReadStream(file1Path);
     const uploadParams1 = {
       Bucket: bucketName,
@@ -77,7 +77,7 @@ export const handler = async (event) => {
     const result1 = await s3.upload(uploadParams1).promise();
     console.log(`File uploaded successfully. ETag: ${result1.ETag}`);
 
-    // Upload file2.txt
+    // Upload HD.dat
     const file2Stream = createReadStream(file2Path);
     const uploadParams2 = {
       Bucket: bucketName,
