@@ -1,6 +1,3 @@
-import { writeFile } from "node:fs/promises";
-import { Readable } from "node:stream";
-import decompress from "decompress";
 import fs from "fs";
 import passkit from "passkit-generator";
 const PKPass = passkit.PKPass;
