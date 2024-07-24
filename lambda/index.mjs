@@ -10,9 +10,9 @@ async function getDatabase() {
     "https://data.fcc.gov/download/pub/uls/complete//l_amat.zip"
   );
   const body = Readable.fromWeb(response.body);
-  await writeFile("database.zip", body);
+  await writeFile("/tmp/database.zip", body);
 
-  decompress("database.zip", "data")
+  decompress("/tmp/database.zip", "/tmp/data")
     .then((files) => {
       console.log(files);
     })
