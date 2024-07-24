@@ -7,6 +7,7 @@
 [] Create cron-scheduled second Lambda function to regularly retrieve the FCC database and store in S3.
 [] Configure the primary Lambda function to retrieve the FCC database from S3.
 [] Serve the `.pkpass` to the front-end.
+[] Sort out CORS errors.
 [] Parse the amateur radio operator class from the database (Technician, General, Extra).
 [] Add ZIP code validation logic to backend.
 [] Add ZIP code validation error to frontend.
