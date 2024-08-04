@@ -17,8 +17,8 @@ jobs:
         run: curl -O https://data.fcc.gov/download/pub/uls/complete/l_amat.zip
       - name: Unzip Database
         run: unzip l_amat.zip
-      - name: Debug
-        run: mkdir data && mv HD.dat ./data && mv EN.data ./data
+      - name: Organize Files
+        run: mkdir data && mv HD.dat ./data && mv EN.dat ./data
       - name: Deploy Database Files
         uses: reggionick/s3-deploy@v4
         with:
