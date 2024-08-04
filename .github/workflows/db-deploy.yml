@@ -23,4 +23,3 @@ jobs:
           folder: data
           bucket: database.hamradiowallet.com
           bucket-region: ${{ secrets.AWS_REGION }}
-          private: false
