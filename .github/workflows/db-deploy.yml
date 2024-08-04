@@ -1,5 +1,11 @@
 name: S3 Databse Deploy
-on: [push]
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -7,10 +13,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
       - name: Download Databse
-        run: curl https://data.fcc.gov/download/pub/uls/complete/l_amat.zip -O l_amat.zip
+        run: curl -O https://data.fcc.gov/download/pub/uls/complete/l_amat.zip
       - name: Unzip Database
         run: unzip l_amat.zip
       - name: Debug
