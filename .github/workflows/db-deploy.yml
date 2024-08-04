@@ -18,12 +18,12 @@ jobs:
       - name: Unzip Database
         run: unzip l_amat.zip
       - name: Debug
-        run: ls
+        run: mkdir data && mv HD.dat ./data && mv EN.data ./data
       - name: Deploy Database Files
         uses: reggionick/s3-deploy@v4
         with:
           folder: data
-          bucket: database.hamradiowallet.com"
+          bucket: database.hamradiowallet.com
           bucket-region: ${{ secrets.AWS_REGION }}
           delete-removed: true
           no-cache: true

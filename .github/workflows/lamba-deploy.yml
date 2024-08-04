@@ -1,11 +1,11 @@
-name: Lambda Deploy
+name: Lambda Function Deploy
 on: [push]
 jobs:
   deploy_handler_function:
     name: Deploy hamradiowallet.com API Handler
     runs-on: ubuntu-latest
     steps:
-      - name: checkout source code
+      - name: Checkout Code
         uses: actions/checkout@v3
       - name: ZIP File
         run: |
