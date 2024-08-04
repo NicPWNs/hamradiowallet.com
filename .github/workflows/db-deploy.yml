@@ -1,0 +1,26 @@
+name: S3 Databse Deploy
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Download Databse
+        run: curl https://data.fcc.gov/download/pub/uls/complete/l_amat.zip -O l_amat.zip
+      - name: Unzip Database
+        run: unzip l_amat.zip
+      - name: Debug
+        run: ls
+      - name: Deploy Database Files
+        uses: reggionick/s3-deploy@v4
+        with:
+          folder: data
+          bucket: database.hamradiowallet.com"
+          bucket-region: ${{ secrets.AWS_REGION }}
+          delete-removed: true
+          no-cache: true
+          private: false
