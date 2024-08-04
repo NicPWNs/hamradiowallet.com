@@ -4,7 +4,6 @@
 
 ## TODO
 
-- [ ] Create cron-scheduled second Lambda function to regularly retrieve the FCC database and store in S3. Maybe do via actions instead? Lambda times out easily.
 - [ ] Configure the primary Lambda function to retrieve the FCC database from S3.
 - [ ] Serve the `.pkpass` to the front-end.
 - [ ] Sort out CORS errors.

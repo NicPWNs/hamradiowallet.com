@@ -1,5 +1,6 @@
 import fs from "fs";
 import passkit from "passkit-generator";
+
 const PKPass = passkit.PKPass;
 
 async function getDatabase() {}
