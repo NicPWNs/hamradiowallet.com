@@ -11,7 +11,9 @@
 - [ ] Add ZIP code validation logic to backend.
 - [ ] Add ZIP code validation error to frontend.
 - [ ] Add header/logo to frontend website.
+- [ ] Update sample screenshot on website.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
 - [ ] Add logic to display an error if site is accessed via Windows/Linux (Must be Android/iOS/macOS).
 - [ ] Add proper error handling throughout.
+- [ ] Add comments throughout.
