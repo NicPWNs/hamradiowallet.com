@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 // Environment
-let api = "dev";
+let api = "api";
 
 export default function Home() {
   // Sea of state variables
