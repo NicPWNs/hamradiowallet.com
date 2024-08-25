@@ -9,7 +9,6 @@
 ## TODO
 
 - [ ] Fix dates being off by one in prod?
-- [ ] Add colors to footer icons on hover.
 - [ ] Restructure pass. No duplicate issue date.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
