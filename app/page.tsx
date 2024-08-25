@@ -11,6 +11,7 @@ import {
   faSun,
   faMoon,
   faHeart,
+  faL,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Environment
@@ -28,6 +29,9 @@ export default function Home() {
   const [zipCodeError, setZipCodeError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [passkitUrl, setPasskitUrl] = useState("");
+  const [callsignFound, setCallsignFound] = useState("");
+  const [zipcodeFound, setZipcodeFound] = useState("");
+  const [miscError, setMiscError] = useState("");
 
   const cardJiggle = (delay = 500) => {
     const timer = setTimeout(() => {
@@ -40,6 +44,11 @@ export default function Home() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Reset error messages
+    setCallsignFound("");
+    setZipcodeFound("");
+
+    // Callsign input validation
     const callSignRegex = /^(?:[KNW]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
     if (!callSignRegex.test(callSign)) {
       setCallSignError("Invalid FCC Call Sign");
@@ -48,6 +57,7 @@ export default function Home() {
       setCallSignError("");
     }
 
+    // Zipcode input validation
     const zipCodeRegex = /^\d{5}$/;
     if (!zipCodeRegex.test(zipCode)) {
       setZipCodeError("Invalid ZIP Code");
@@ -56,20 +66,26 @@ export default function Home() {
       setZipCodeError("");
     }
 
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
-      );
+    setIsLoading(true);
+    const response = await fetch(
+      `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
+    );
 
+    if (response.status === 200) {
       const key = await response.text();
       setPasskitUrl(`https://${env}.hamradiowallet.com/get_pass?id=${key}`);
-    } catch (error) {
-      console.error("Error generating pass:", error);
-    } finally {
       setFlip(false);
       setCardAnimation(false);
       cardJiggle(1000);
+    } else if (response.status === 403) {
+      setZipcodeFound("ZIP Code Does Not Match FCC");
+      setIsLoading(false);
+    } else if (response.status === 404) {
+      setCallsignFound("Call Sign Not Found");
+      setIsLoading(false);
+    } else {
+      setMiscError("Something Went Wrong. Try Again.");
+      setIsLoading(false);
     }
   };
 
@@ -153,6 +169,16 @@ export default function Home() {
             {flip && (
               <form onSubmit={handleSubmit} className="px-8 pt-6 pb-8 mb-4">
                 <div className="mb-4">
+                  {callsignFound && (
+                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                      {callsignFound}
+                    </p>
+                  )}
+                  {zipcodeFound && (
+                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                      {zipcodeFound}
+                    </p>
+                  )}
                   <label className="block text-gray-700 font-bold mb-2">
                     Call Sign
                   </label>

@@ -132,7 +132,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   if (row == 0) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ error: "Callsign not found." }),
+      body: JSON.stringify({ error: "Call sign not found." }),
     };
   }
 
@@ -145,8 +145,8 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Check if zipcode matches
   if (zipcode != addressZip) {
     return {
-      statusCode: 404,
-      body: JSON.stringify({ error: "ZIP code invalid." }),
+      statusCode: 403,
+      body: JSON.stringify({ error: "ZIP code does not match FCC." }),
     };
   }
 
