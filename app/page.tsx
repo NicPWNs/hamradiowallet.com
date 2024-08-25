@@ -240,7 +240,10 @@ export default function Home() {
         </CardFlip>
         <div className="flex mt-10">
           <div className="relative group text-gray-400 hover:text-gray-500 cursor-pointer mx-2">
-            <a href="https://github.com/NicPWNs/hamradiowallet" target="_blank">
+            <a
+              href="https://github.com/NicPWNs/hamradiowallet.com"
+              target="_blank"
+            >
               <FontAwesomeIcon icon={faGithub} size="2x" />
             </a>
             <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
@@ -249,7 +252,7 @@ export default function Home() {
           </div>
           <div className="relative group text-gray-400 hover:text-gray-500 cursor-pointer mx-2">
             <a
-              href="https://github.com/NicPWNs/hamradiowallet/issues/new"
+              href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
               target="_blank"
             >
               <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
@@ -259,7 +262,10 @@ export default function Home() {
             </span>
           </div>
           <div className="relative group text-gray-400 hover:text-gray-500 cursor-pointer mx-2">
-            <a href="https://github.com/NicPWNs/hamradiowallet" target="_blank">
+            <a
+              href="https://github.com/NicPWNs/hamradiowallet.com"
+              target="_blank"
+            >
               <FontAwesomeIcon icon={faHeart} size="2x" />
             </a>
             <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
