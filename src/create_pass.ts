@@ -153,7 +153,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Extract matching license data
   let grantDate = new Date(licenseData[row].split("|")[7]);
   let expireDate = new Date(licenseData[row].split("|")[8]);
-  let effectiveDate = new Date(licenseData[row].split("|")[42]);
 
   // Extract class data
   let privileges = classData[classRow].split("|")[5];
@@ -176,7 +175,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
     frn = "0123456789";
     grantDate = new Date();
     expireDate = new Date(grantDate.setFullYear(grantDate.getFullYear() + 10));
-    effectiveDate = new Date();
   }
 
   // Load certificate secrets
@@ -238,13 +236,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
       label: "GRANT DATE",
       value: grantDate.toISOString(),
       dateStyle: "PKDateStyleLong",
-      row: 0,
-    },
-    {
-      key: "effective",
-      label: "EFFECTIVE DATE",
-      value: effectiveDate.toISOString(),
-      dateStyle: "PKDateStyleLong",
       row: 1,
     },
     {
@@ -297,9 +288,19 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   await s3.send(putCommand);
 
+  let name = firstName + " " + lastName;
+
   // Success
   return {
     statusCode: 200,
-    body: key,
+    body: JSON.stringify({
+      key,
+      callsign,
+      frn,
+      name,
+      privileges,
+      grantDate,
+      expireDate,
+    }),
   };
 }

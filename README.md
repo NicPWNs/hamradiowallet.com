@@ -4,15 +4,15 @@
 
 ## Example
 
-<img src="./public/apple_pass.jpg" width="300" height="400" alt="Example Apple Wallet Pass"/>
+<img src="./public/example_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass"/>
 
 ## TODO
 
 - [ ] Fix dates being off by one in prod?
-- [ ] Restructure pass. No duplicate issue date.
+- [ ] Dynamically change subheader with status.
+- [ ] Fix Add to Apple Wallet and QR code layout.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
-- [ ] Dynamically display user's example pass?
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.
 - [ ] Remove construction banner.
 - [ ] Add donation method.
