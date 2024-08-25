@@ -10,9 +10,11 @@
 
 - [ ] Fix dates being off by one in prod?
 - [ ] Add frontend errors for bad lookups.
+- [ ] Add colors to footer icons on hover.
+- [ ] Restructure pass. No duplicate issue date.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
-- [ ] Dynamically display an example pass?
+- [ ] Dynamically display user's example pass?
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.
 - [ ] Remove construction banner.
 - [ ] Add donation method.
