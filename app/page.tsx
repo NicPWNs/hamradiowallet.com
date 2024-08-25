@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 // Environment
-let api = "api";
+let env: String;
 
 export default function Home() {
   // Sea of state variables
@@ -59,11 +59,11 @@ export default function Home() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `https://${api}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
+        `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
       );
 
       const key = await response.text();
-      setPasskitUrl(`https://${api}.hamradiowallet.com/get_pass?id=${key}`);
+      setPasskitUrl(`https://${env}.hamradiowallet.com/get_pass?id=${key}`);
     } catch (error) {
       console.error("Error generating pass:", error);
     } finally {
@@ -87,6 +87,11 @@ export default function Home() {
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
       setMode(true);
+    }
+    if (process.env.ENV === "production") {
+      env = "api";
+    } else {
+      env = "dev";
     }
     return () => clearTimeout(timer);
   }, []);

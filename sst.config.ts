@@ -82,6 +82,9 @@ export default $config({
         name: "hamradiowallet.com",
         redirects: ["www.hamradiowallet.com"],
       },
+      environment: {
+        ENV: $app.stage,
+      },
     });
   },
 });

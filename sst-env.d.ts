@@ -7,7 +7,7 @@ declare module "sst" {
       "name": string
       "type": "sst.aws.Bucket"
     }
-    "MyApi": {
+    "DevApi": {
       "type": "sst.aws.ApiGatewayV2"
       "url": string
     }

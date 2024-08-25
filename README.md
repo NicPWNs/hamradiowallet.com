@@ -2,10 +2,11 @@
 
 > An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.
 
+![Example Apple Pass](./public/apple_pass.jpg)
+
 ## TODO
 
-- [ ] Fix dates being off by one?
-- [ ] Swap frontend between dev and prod.
+- [ ] Fix dates being off by one in prod?
 - [ ] Add frontend errors for bad lookups.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
