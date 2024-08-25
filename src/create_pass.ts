@@ -139,7 +139,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Extract matching user data
   let firstName = userData[row].split("|")[8];
   let lastName = userData[row].split("|")[10];
-  let addressZip = userData[row].split("|")[18];
+  let addressZip = userData[row].split("|")[18].substring(0, 5);
   let frn = userData[row].split("|")[22];
 
   // Check if zipcode matches

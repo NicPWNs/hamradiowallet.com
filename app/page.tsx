@@ -187,7 +187,7 @@ export default function Home() {
                       callSignError ? "border-red-500" : ""
                     }`}
                     type="text"
-                    placeholder="Enter FCC Call Sign"
+                    placeholder="Enter Your FCC Call Sign"
                     value={callSign}
                     onChange={(e) =>
                       setCallSign(
@@ -211,7 +211,7 @@ export default function Home() {
                       zipCodeError ? "border-red-500" : ""
                     }`}
                     type="number"
-                    placeholder="Enter FCC ZIP Code"
+                    placeholder="Enter Your FCC ZIP Code"
                     value={zipCode}
                     onChange={(e) =>
                       setZipCode(
