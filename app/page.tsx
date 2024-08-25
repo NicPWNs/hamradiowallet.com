@@ -37,7 +37,6 @@ export default function Home() {
   const [name, setName] = useState("");
   const [privileges, setPrivileges] = useState("");
   const [grantDate, setGrantDate] = useState("");
-  const [effectiveDate, setEffectiveDate] = useState("");
   const [expireDate, setExpireDate] = useState("");
 
   const cardJiggle = (delay = 500) => {
@@ -94,9 +93,6 @@ export default function Home() {
       setGrantDate(
         new Date(body.grantDate).toLocaleDateString("en-US", options)
       );
-      setEffectiveDate(
-        new Date(body.effectiveDate).toLocaleDateString("en-US", options)
-      );
       setExpireDate(
         new Date(body.expireDate).toLocaleDateString("en-US", options)
       );
@@ -112,7 +108,7 @@ export default function Home() {
       setCallsignFound("Call Sign Not Found");
       setIsLoading(false);
     } else {
-      setMiscError("Something Went Wrong. Try Again.");
+      setMiscError("Something Broke. Try Again.");
       setIsLoading(false);
     }
   };
@@ -377,6 +373,11 @@ export default function Home() {
                   {zipcodeFound && (
                     <p className="text-red-500 text-md mb-5 flex flex-col items-center">
                       {zipcodeFound}
+                    </p>
+                  )}
+                  {miscError && (
+                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                      {miscError}
                     </p>
                   )}
                   <label className="block text-gray-700 font-bold mb-2">
