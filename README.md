@@ -2,7 +2,7 @@
 
 > An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.
 
-<img src="./public/apple_pass.jpg" width="100" height="150" alt="Example Apple Wallet Pass"/>
+<img src="./public/apple_pass.jpg" width="300" height="400" alt="Example Apple Wallet Pass"/>
 
 ## TODO
 
