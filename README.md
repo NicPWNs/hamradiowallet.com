@@ -9,8 +9,7 @@
 ## TODO
 
 - [ ] Fix dates being off by one in prod?
-- [ ] Dynamically change subheader with status.
-- [ ] Fix Add to Apple Wallet and QR code layout.
+- [ ] Fix QR code layout.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Add logic to guess preference for Google/Apple wallet pass based on user agent.
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.

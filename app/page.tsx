@@ -114,6 +114,8 @@ export default function Home() {
   };
 
   const handleClick = () => {
+    if (passkitUrl) return;
+
     if (!flip) {
       setFlip(true);
       setShow(false);
@@ -144,7 +146,19 @@ export default function Home() {
     >
       <div className="flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-0">HAM Radio Wallet Pass</h1>
-        <h1 className="text-lg font-italic mb-10">Get yours for free.</h1>
+        {!passkitUrl && show && (
+          <h1 className="text-lg font-italic mb-5">Get yours for free.</h1>
+        )}
+        {passkitUrl && (
+          <h1 className="text-lg font-italic mb-5 text-green-500">
+            Your pass is ready!
+          </h1>
+        )}
+        {!show && flip && (
+          <h1 className="text-lg font-italic mb-5 text-blue-400">
+            Enter your FCC details.
+          </h1>
+        )}
         {show && (
           <button
             className="w-[110px] text-white text-sm font-light bg-blue-500 hover:bg-blue-600 rounded-lg mb-10"
@@ -155,10 +169,7 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5">
-            <div className="flex flex-col items-center">
-              <p className="text-green-500 text-lg mt-5">Your Pass is Ready!</p>
-            </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mb-5">
               <a href={passkitUrl} target="_blank">
                 <Image
                   src="/add_to_apple_wallet.svg"
@@ -168,9 +179,6 @@ export default function Home() {
                 />
               </a>
             </div>
-            <div className="flex flex-col items-center">
-              <QRCode value={passkitUrl} size={200} />
-            </div>
           </div>
         )}
         <CardFlip
@@ -178,7 +186,13 @@ export default function Home() {
           flipDirection="horizontal"
           containerClassName={` ${cardAnimation ? "animate-jiggle" : ""}`}
         >
-          <div className="cursor-pointer rounded-2xl shadow-lg shadow-black">
+          <div
+            className={
+              passkitUrl
+                ? "rounded-2xl shadow-lg shadow-black"
+                : "cursor-pointer rounded-2xl shadow-lg shadow-black"
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
