@@ -169,7 +169,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   privileges = classMap[privileges] || privileges;
 
   // Seeded example, ZIP: 02720
-  if (callsign == "WA1LET") {
+  if (callsign == "M0RSE") {
     firstName = "Samuel";
     lastName = "Morse";
     frn = "0123456789";
