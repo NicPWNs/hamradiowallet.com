@@ -3,7 +3,7 @@
 import Image from "next/image";
 import CardFlip from "react-card-flip";
 import QRCode from "qrcode.react";
-import React, { useState, useEffect, SetStateAction } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -11,7 +11,6 @@ import {
   faSun,
   faMoon,
   faHeart,
-  faL,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Environment
