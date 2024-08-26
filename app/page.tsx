@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import CardFlip from "react-card-flip";
 import QRCode from "qrcode.react";
+import CardFlip from "react-card-flip";
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
   faSun,
@@ -38,14 +38,15 @@ export default function Home() {
   const [grantDate, setGrantDate] = useState("");
   const [expireDate, setExpireDate] = useState("");
 
+  // Rotational card jiggle
   const cardJiggle = (delay = 500) => {
     const timer = setTimeout(() => {
       setCardAnimation(true);
     }, delay);
-
     return timer;
   };
 
+  // Form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -71,11 +72,13 @@ export default function Home() {
       setZipCodeError("");
     }
 
+    // Wait for create_pass API response
     setIsLoading(true);
     const response = await fetch(
       `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
     );
 
+    // Result based on API status code
     if (response.status === 200) {
       const body = await response.json();
 
@@ -112,6 +115,7 @@ export default function Home() {
     }
   };
 
+  // Card flip
   const handleClick = () => {
     if (passkitUrl) return;
 
@@ -121,14 +125,20 @@ export default function Home() {
     }
   };
 
+  // On page load
   useEffect(() => {
+    // Initial card jiggle
     const timer = cardJiggle();
+
+    // Auto dark mode
     if (
       window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
       setMode(true);
     }
+
+    // Change API based on environment
     if (process.env.ENV === "production") {
       env = "api";
     } else {
