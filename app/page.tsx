@@ -9,9 +9,10 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
-  faSun,
-  faMoon,
+  faQuestionCircle,
   faHeart,
+  faMoon,
+  faSun,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Environment
@@ -490,6 +491,17 @@ export default function Home() {
           </div>
         </CardFlip>
         <div className="flex mt-10">
+          <div className="relative group text-gray-400 hover:text-blue-400 cursor-pointer mx-2">
+            <a
+              href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
+              target="_blank"
+            >
+              <FontAwesomeIcon icon={faQuestionCircle} size="2x" />
+            </a>
+            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+              About
+            </span>
+          </div>
           <div className="relative group text-gray-400 cursor-pointer mx-2">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com"
@@ -505,17 +517,6 @@ export default function Home() {
               GitHub
             </span>
           </div>
-          <div className="relative group text-gray-400 hover:text-red-400 cursor-pointer mx-2">
-            <a
-              href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
-              target="_blank"
-            >
-              <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
-            </a>
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
-              Issue
-            </span>
-          </div>
           <div className="relative group text-gray-400 hover:text-pink-400 cursor-pointer mx-2">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com"
@@ -527,6 +528,17 @@ export default function Home() {
               Sponsor
             </span>
           </div>
+          <div className="relative group text-gray-400 hover:text-red-400 cursor-pointer mx-2">
+            <a
+              href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
+              target="_blank"
+            >
+              <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
+            </a>
+            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+              Issue
+            </span>
+          </div>
           <div className="relative group text-gray-400 hover:text-yellow-400 cursor-pointer mx-2">
             <FontAwesomeIcon
               icon={mode ? faSun : faMoon}
@@ -534,7 +546,7 @@ export default function Home() {
               onClick={(e) => setMode(!mode)}
             />
             <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
-              {mode ? "Light Mode" : "Dark Mode"}
+              {mode ? "Light" : "Dark"}
             </span>
           </div>
         </div>

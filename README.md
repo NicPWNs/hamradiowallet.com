@@ -9,7 +9,6 @@
 ## TODO
 
 - [ ] Fix dates being off by one in prod?
-- [ ] Fix background on iOS.
 - [ ] Add logic for Google Wallet passes.
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.
 - [ ] Add questions to footer.
