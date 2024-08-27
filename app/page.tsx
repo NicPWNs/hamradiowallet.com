@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import QRCode from "qrcode.react";
+import UAParser from "ua-parser-js";
 import CardFlip from "react-card-flip";
 import React, { useState, useEffect } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
@@ -37,6 +38,7 @@ export default function Home() {
   const [privileges, setPrivileges] = useState("");
   const [grantDate, setGrantDate] = useState("");
   const [expireDate, setExpireDate] = useState("");
+  const [deviceType, setDeviceType] = useState("");
 
   // Rotational card jiggle
   const cardJiggle = (delay = 500) => {
@@ -100,6 +102,7 @@ export default function Home() {
       );
 
       setPasskitUrl(`https://${env}.hamradiowallet.com/get_pass?id=${key}`);
+
       setFlip(false);
       setCardAnimation(false);
       cardJiggle(1000);
@@ -144,6 +147,11 @@ export default function Home() {
     } else {
       env = "dev";
     }
+
+    // Get device type
+    const agent = new UAParser(navigator.userAgent).getResult();
+    setDeviceType(agent.os.name as string);
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -178,16 +186,25 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5">
-            <div className="flex flex-col items-center mb-5">
-              <a href={passkitUrl} target="_blank">
-                <Image
-                  src="/add_to_apple_wallet.svg"
-                  alt="Add to Apple Wallet"
-                  width={200}
-                  height={150}
-                />
-              </a>
-            </div>
+            {deviceType == "Mac OS" || deviceType == "iPhone" ? (
+              <div className="flex flex-col items-center mb-5">
+                <a href={passkitUrl} target="_blank">
+                  <Image
+                    src="/add_to_apple_wallet.svg"
+                    alt="Add to Apple Wallet"
+                    width={200}
+                    height={150}
+                  />
+                </a>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center mb-5">
+                <text className="italic text-xs mb-2">
+                  Scan me with your phone.
+                </text>
+                <QRCode value={passkitUrl} size={128} />
+              </div>
+            )}
           </div>
         )}
         <CardFlip

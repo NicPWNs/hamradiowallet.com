@@ -1,0 +1,61 @@
+{
+  "id": "ISSUER_ID.OBJECT_ID",
+  "classId": "ISSUER_ID.GENERIC_CLASS_ID",
+  "logo": {
+    "sourceUri": {
+      "uri": "https://upload.wikimedia.org/wikipedia/commons/2/2c/International_amateur_radio_symbol.svg"
+    },
+    "contentDescription": {
+      "defaultValue": {
+        "language": "en-US",
+        "value": "LOGO_IMAGE_DESCRIPTION"
+      }
+    }
+  },
+  "cardTitle": {
+    "defaultValue": {
+      "language": "en-US",
+      "value": "Radio License"
+    }
+  },
+  "subheader": {
+    "defaultValue": {
+      "language": "en-US",
+      "value": "CALL SIGN"
+    }
+  },
+  "header": {
+    "defaultValue": {
+      "language": "en-US",
+      "value": "N1CPJ"
+    }
+  },
+  "textModulesData": [
+    {
+      "id": "name",
+      "header": "NAME",
+      "body": "Nicholas Jones"
+    },
+    {
+      "id": "frn",
+      "header": "FRN",
+      "body": "0123456789"
+    },
+    {
+      "id": "grant_date",
+      "header": "GRANT DATE",
+      "body": "August 24, 2024"
+    },
+    {
+      "id": "expiration_date",
+      "header": "EXPIRATION DATE",
+      "body": "August 24, 2024"
+    }
+  ],
+  "barcode": {
+    "type": "QR_CODE",
+    "value": "BARCODE_VALUE",
+    "alternateText": ""
+  },
+  "hexBackgroundColor": "#ffffff"
+}
