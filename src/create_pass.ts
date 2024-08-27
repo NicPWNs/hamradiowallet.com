@@ -114,7 +114,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   // Find row with matching callsign
   let row = 0;
-  for (var i = 0; i < userData.length; i++) {
+  for (let i = 0; i < userData.length; i++) {
     if (userData[i].match(callsign)) {
       row = i;
     }
@@ -122,7 +122,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   // Find row with matching callsign for class
   let classRow = 0;
-  for (var i = 0; i < classData.length; i++) {
+  for (let i = 0; i < classData.length; i++) {
     if (classData[i].match(callsign)) {
       classRow = i;
     }

@@ -1,12 +1,12 @@
 import { Resource } from "sst";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-var AdmZip = require("adm-zip");
+let AdmZip = require("adm-zip");
 
 const client = new S3Client({});
 
 export async function handler() {
   try {
-    var url = "https://data.fcc.gov/download/pub/uls/complete/l_amat.zip";
+    let url = "https://data.fcc.gov/download/pub/uls/complete/l_amat.zip";
 
     const filesToKeep = ["EN.dat", "HD.dat", "AM.dat"];
     const bucketName = Resource.DataBucket.name;
