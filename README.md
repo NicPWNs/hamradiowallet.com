@@ -11,6 +11,6 @@
 - [ ] Fix dates being off by one in prod?
 - [ ] Add logic for Google Wallet passes.
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.
-- [ ] Add questions to footer.
+- [ ] Add about page.
 - [ ] Remove construction banner.
 - [ ] Add donation method.
