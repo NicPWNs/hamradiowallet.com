@@ -162,18 +162,18 @@ export default function Home() {
         mode ? "bg-neutral-800 text-white" : "bg-neutral-100 text-black"
       }
     >
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h1 className="text-2xl font-bold mb-0">HAM Radio Wallet Pass</h1>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="mb-0 text-2xl font-bold">HAM Radio Wallet Pass</h1>
         {!passkitUrl && show && (
-          <h1 className="text-lg font-italic mb-5">Get yours for free.</h1>
+          <h1 className="mb-5 text-lg font-italic">Get yours for free.</h1>
         )}
         {passkitUrl && (
-          <h1 className="text-lg font-italic mb-5 text-green-500">
+          <h1 className="mb-5 text-lg text-green-500 font-italic">
             Your pass is ready!
           </h1>
         )}
         {!show && flip && (
-          <h1 className="text-lg font-italic mb-5 text-blue-400">
+          <h1 className="mb-5 text-lg text-blue-400 font-italic">
             Enter your FCC details.
           </h1>
         )}
@@ -200,7 +200,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="flex flex-col items-center mb-5">
-                <text className="italic text-xs mb-2">
+                <text className="mb-2 text-xs italic">
                   Scan me with your phone.
                 </text>
                 <QRCode value={passkitUrl} size={128} />
@@ -391,21 +391,21 @@ export default function Home() {
               <form onSubmit={handleSubmit} className="px-8 pt-6 pb-8 mb-4">
                 <div className="mb-4">
                   {callsignFound && (
-                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                    <p className="flex flex-col items-center mb-5 text-red-500 text-md">
                       {callsignFound}
                     </p>
                   )}
                   {zipcodeFound && (
-                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                    <p className="flex flex-col items-center mb-5 text-red-500 text-md">
                       {zipcodeFound}
                     </p>
                   )}
                   {miscError && (
-                    <p className="text-red-500 text-md mb-5 flex flex-col items-center">
+                    <p className="flex flex-col items-center mb-5 text-red-500 text-md">
                       {miscError}
                     </p>
                   )}
-                  <label className="block text-gray-700 font-bold mb-2">
+                  <label className="block mb-2 font-bold text-gray-700">
                     Call Sign
                   </label>
                   <input
@@ -423,13 +423,13 @@ export default function Home() {
                     disabled={isLoading}
                   />
                   {callSignError && (
-                    <p className="text-red-500 text-xs italic mt-2">
+                    <p className="mt-2 text-xs italic text-red-500">
                       {callSignError}
                     </p>
                   )}
                 </div>
                 <div className="mb-6">
-                  <label className="block text-gray-700 font-bold mb-2">
+                  <label className="block mb-2 font-bold text-gray-700">
                     ZIP Code
                   </label>
                   <input
@@ -447,21 +447,21 @@ export default function Home() {
                     disabled={isLoading}
                   />
                   {zipCodeError && (
-                    <p className="text-red-500 text-xs italic mt-2">
+                    <p className="mt-2 text-xs italic text-red-500">
                       {zipCodeError}
                     </p>
                   )}
                 </div>
                 <div className="flex justify-center">
                   <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+                    className="flex items-center justify-center px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
                     type="submit"
                     disabled={isLoading}
                   >
                     {isLoading ? (
                       <>
                         <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
                           fill="none"
                           viewBox="0 0 24 24"
                         >
@@ -491,18 +491,18 @@ export default function Home() {
           </div>
         </CardFlip>
         <div className="flex mt-10">
-          <div className="relative group text-gray-400 hover:text-blue-400 cursor-pointer mx-2">
+          <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-blue-400">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
               target="_blank"
             >
               <FontAwesomeIcon icon={faQuestionCircle} size="2x" />
             </a>
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
               About
             </span>
           </div>
-          <div className="relative group text-gray-400 cursor-pointer mx-2">
+          <div className="relative mx-2 text-gray-400 cursor-pointer group">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com"
               target="_blank"
@@ -513,39 +513,39 @@ export default function Home() {
                 className={mode ? "hover:text-white" : "hover:text-black"}
               />
             </a>
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
               GitHub
             </span>
           </div>
-          <div className="relative group text-gray-400 hover:text-pink-400 cursor-pointer mx-2">
+          <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-pink-400">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com"
               target="_blank"
             >
               <FontAwesomeIcon icon={faHeart} size="2x" />
             </a>
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
               Sponsor
             </span>
           </div>
-          <div className="relative group text-gray-400 hover:text-red-400 cursor-pointer mx-2">
+          <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-red-400">
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com/issues/new"
               target="_blank"
             >
               <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
             </a>
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
               Issue
             </span>
           </div>
-          <div className="relative group text-gray-400 hover:text-yellow-400 cursor-pointer mx-2">
+          <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-yellow-400">
             <FontAwesomeIcon
               icon={mode ? faSun : faMoon}
               size="2x"
               onClick={(e) => setMode(!mode)}
             />
-            <span className="text-xs absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+            <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
               {mode ? "Light" : "Dark"}
             </span>
           </div>
