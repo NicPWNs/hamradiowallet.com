@@ -33,7 +33,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Server-side callsign validation
-  const callsignRegex = /^(?:[KNW]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
+  const callsignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
   if (!callsignRegex.test(callsign)) {
     return {
       statusCode: 422,
@@ -129,7 +129,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Check if callsign found
-  if (row == 0) {
+  if (row == 0 && callsign != "M0RSE") {
     return {
       statusCode: 404,
       body: JSON.stringify({ error: "Call sign not found." }),
@@ -142,6 +142,24 @@ export async function handler(event: APIGatewayProxyEventV2) {
   let addressZip = userData[row].split("|")[18].substring(0, 5);
   let frn = userData[row].split("|")[22];
 
+  // Extract matching license data
+  let grantDate = new Date(licenseData[row].split("|")[7]);
+  let expireDate = new Date(licenseData[row].split("|")[8]);
+
+  // Extract class data
+  let privileges = classData[classRow].split("|")[5];
+
+  // Seeded example, ZIP: 02720
+  if (callsign == "M0RSE") {
+    firstName = "Samuel";
+    lastName = "Morse";
+    addressZip = "02720";
+    frn = "0123456789";
+    grantDate = new Date();
+    expireDate = new Date(grantDate.setFullYear(grantDate.getFullYear() + 10));
+    privileges = "T";
+  }
+
   // Check if zipcode matches
   if (zipcode != addressZip) {
     return {
@@ -149,13 +167,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
       body: JSON.stringify({ error: "ZIP code does not match FCC." }),
     };
   }
-
-  // Extract matching license data
-  let grantDate = new Date(licenseData[row].split("|")[7]);
-  let expireDate = new Date(licenseData[row].split("|")[8]);
-
-  // Extract class data
-  let privileges = classData[classRow].split("|")[5];
 
   let classMap: { [key: string]: string } = {
     T: "Technician",
@@ -167,15 +178,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
   };
 
   privileges = classMap[privileges] || privileges;
-
-  // Seeded example, ZIP: 02720
-  if (callsign == "M0RSE") {
-    firstName = "Samuel";
-    lastName = "Morse";
-    frn = "0123456789";
-    grantDate = new Date();
-    expireDate = new Date(grantDate.setFullYear(grantDate.getFullYear() + 10));
-  }
 
   // Load certificate secrets
   const wwdr = Resource.WWDRCert.value;

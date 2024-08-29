@@ -58,7 +58,7 @@ export default function Home() {
     setZipcodeFound("");
 
     // Callsign input validation
-    const callSignRegex = /^(?:[KNW]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
+    const callSignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
     if (!callSignRegex.test(callSign)) {
       setCallSignError("Invalid FCC Call Sign");
       return;
