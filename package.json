@@ -25,7 +25,7 @@
     "react": "^18",
     "react-card-flip": "^1.2.3",
     "react-dom": "^18",
-    "sst": "3.0.70",
+    "sst": "3.0.124",
     "ua-parser-js": "^1.0.38"
   },
   "devDependencies": {
