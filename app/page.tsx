@@ -187,7 +187,7 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5">
-            {deviceType == "Mac OS" || deviceType == "iPhone" ? (
+            {deviceType == "Mac OS" || deviceType == "iOS" ? (
               <div className="flex flex-col items-center mb-5">
                 <a href={passkitUrl} target="_blank">
                   <Image
