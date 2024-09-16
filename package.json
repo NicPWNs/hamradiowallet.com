@@ -26,7 +26,7 @@
     "react-card-flip": "^1.2.3",
     "react-dom": "^18",
     "sst": "3.0.124",
-    "ua-parser-js": "^1.0.38"
+    "ua-parser-js": "^1.0.39"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.143",
