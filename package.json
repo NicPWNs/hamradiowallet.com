@@ -19,13 +19,13 @@
     "@types/adm-zip": "^0.5.5",
     "@types/ua-parser-js": "^0.7.39",
     "adm-zip": "^0.5.15",
-    "next": "14.2.6",
+    "next": "14.2.10",
     "passkit-generator": "^3.1.11",
     "qrcode.react": "^4.0.1",
     "react": "^18",
     "react-card-flip": "^1.2.3",
     "react-dom": "^18",
-    "sst": "3.0.124",
+    "sst": "3.1.17",
     "ua-parser-js": "^1.0.39"
   },
   "devDependencies": {
