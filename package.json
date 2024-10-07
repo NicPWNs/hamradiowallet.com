@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.654.0",
+    "@aws-sdk/client-s3": "^3.665.0",
     "@aws-sdk/client-sqs": "^3.637.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
