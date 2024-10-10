@@ -19,7 +19,7 @@
     "@types/adm-zip": "^0.5.5",
     "@types/ua-parser-js": "^0.7.39",
     "adm-zip": "^0.5.16",
-    "next": "14.2.14",
+    "next": "14.2.15",
     "passkit-generator": "^3.1.11",
     "qrcode.react": "^4.0.1",
     "react": "^18",
