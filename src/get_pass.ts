@@ -87,7 +87,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
         ],
         genericObjects: [
           {
-            id: "3388000000022742611.N1CPJ4",
+            id: "3388000000022742611.N1CPJ6",
             classId: "3388000000022742611.HAMRadioWalletPass",
             cardTitle: {
               defaultValue: {
@@ -109,7 +109,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
             },
             logo: {
               sourceUri: {
-                uri: "https://github.com/NicPWNs/hamradiowallet.com/blob/acf6067ac52627ab54a3e247c91121d9b3098f5d/public/International_amateur_radio_symbol.png",
+                uri: "https://github.com/NicPWNs/hamradiowallet.com/blob/3f3d200650ca68903816cb9bf54c0af879142ed9/public/International_amateur_radio_symbol.png",
               },
             },
             textModulesData: [
