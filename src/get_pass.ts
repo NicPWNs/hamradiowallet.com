@@ -31,7 +31,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
       payload: {
         genericClasses: [
           {
-            id: "3388000000022742611.HAMRadioWallet",
+            id: "3388000000022742611.HAMRadioWalletPass",
             classTemplateInfo: {
               cardTemplateOverride: {
                 cardRowTemplateInfos: [
@@ -41,7 +41,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
                         firstValue: {
                           fields: [
                             {
-                              fieldPath: "object.textModulesData['points']",
+                              fieldPath: "object.textModulesData['name']",
                             },
                           ],
                         },
@@ -50,7 +50,30 @@ export async function handler(event: APIGatewayProxyEventV2) {
                         firstValue: {
                           fields: [
                             {
-                              fieldPath: "object.textModulesData['contacts']",
+                              fieldPath: "object.textModulesData['privileges']",
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                  {
+                    twoItems: {
+                      startItem: {
+                        firstValue: {
+                          fields: [
+                            {
+                              fieldPath: "object.textModulesData['frn']",
+                            },
+                          ],
+                        },
+                      },
+                      endItem: {
+                        firstValue: {
+                          fields: [
+                            {
+                              fieldPath:
+                                "object.textModulesData['expiration_date']",
                             },
                           ],
                         },
@@ -64,66 +87,59 @@ export async function handler(event: APIGatewayProxyEventV2) {
         ],
         genericObjects: [
           {
-            id: `3388000000022742611.sss`,
-            classId: `3388000000022742611.HAMRadioWallet`,
-            logo: {
-              sourceUri: {
-                uri: "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/pass_google_logo.jpg",
-              },
-              contentDescription: {
-                defaultValue: {
-                  language: "en-US",
-                  value: "LOGO_IMAGE_DESCRIPTION",
-                },
-              },
-            },
+            id: "3388000000022742611.N1CPJ2",
+            classId: "3388000000022742611.HAMRadioWalletPass",
             cardTitle: {
               defaultValue: {
                 language: "en-US",
-                value: "[TEST ONLY] Google I/O",
+                value: "Radio License",
               },
             },
             subheader: {
               defaultValue: {
                 language: "en-US",
-                value: "Attendee",
+                value: "CALL SIGN",
               },
             },
             header: {
               defaultValue: {
                 language: "en-US",
-                value: "Alex McJacobs",
+                value: "N1CPJ",
+              },
+            },
+            logo: {
+              sourceUri: {
+                uri: "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/pass_google_logo.jpg",
               },
             },
             textModulesData: [
               {
-                id: "points",
-                header: "POINTS",
-                body: "1112",
+                id: "name",
+                header: "NAME",
+                body: "Nicholas Jones",
               },
               {
-                id: "contacts",
-                header: "CONTACTS",
-                body: "79",
+                id: "privileges",
+                header: "PRIVILEGES",
+                body: "General",
+              },
+              {
+                id: "frn",
+                header: "FRN",
+                body: "0123456789",
+              },
+              {
+                id: "expiration_date",
+                header: "EXPIRATION DATE",
+                body: "August 24, 2024",
               },
             ],
             barcode: {
               type: "QR_CODE",
-              value: "BARCODE_VALUE",
-              alternateText: "",
+              value: "https://hamradiowallet.com",
+              alternateText: "hamradiowallet.com",
             },
-            hexBackgroundColor: "#4285f4",
-            heroImage: {
-              sourceUri: {
-                uri: "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-hero-demo-only.png",
-              },
-              contentDescription: {
-                defaultValue: {
-                  language: "en-US",
-                  value: "HERO_IMAGE_DESCRIPTION",
-                },
-              },
-            },
+            hexBackgroundColor: "#ffffff",
           },
         ],
       },
