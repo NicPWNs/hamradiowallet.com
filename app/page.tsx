@@ -78,7 +78,7 @@ export default function Home() {
     // Wait for create_pass API response
     setIsLoading(true);
     const response = await fetch(
-      `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}`
+      `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}&os=${deviceType}`
     );
 
     // Result based on API status code
@@ -187,7 +187,9 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5">
-            {deviceType == "Mac OS" || deviceType == "iOS" ? (
+            {deviceType == "Mac OS" ||
+            deviceType == "iOS" ||
+            deviceType == "Android" ? (
               <div className="flex flex-col items-center mb-5">
                 <a href={passkitUrl} target="_blank">
                   <Image

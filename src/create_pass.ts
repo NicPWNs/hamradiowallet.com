@@ -15,6 +15,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Get request parameters
   const callsign = event.queryStringParameters?.callsign;
   const zipcode = event.queryStringParameters?.zipcode;
+  const os = event.queryStringParameters?.os;
 
   // Check for callsign parameter
   if (!callsign) {
@@ -177,118 +178,124 @@ export async function handler(event: APIGatewayProxyEventV2) {
     P: "Technician Plus",
   };
 
+  let key = "";
+
   privileges = classMap[privileges] || privileges;
 
-  // Load certificate secrets
-  const wwdr = Resource.WWDRCert.value;
-  const signerCert = Resource.SignerCert.value;
-  const signerKey = Resource.SignerKey.value;
+  if (os == "iOS") {
+    // Load certificate secrets
+    const wwdr = Resource.WWDRCert.value;
+    const signerCert = Resource.SignerCert.value;
+    const signerKey = Resource.SignerKey.value;
 
-  // Create pass
-  const pass = await PKPass.from(
-    {
-      model: "src/hamradiowallet.pass",
-      certificates: {
-        wwdr,
-        signerCert,
-        signerKey,
-      },
-    },
-    {
-      serialNumber: frn,
-    }
-  );
-
-  // Set pass fields
-  pass.setExpirationDate(expireDate);
-
-  pass.setBarcodes({
-    format: "PKBarcodeFormatQR",
-    message: "https://hamradiowallet.com/",
-    messageEncoding: "iso-8859-1",
-  });
-
-  pass.headerFields.push({
-    key: "callsign",
-    label: "CALL SIGN",
-    value: callsign,
-  });
-
-  pass.primaryFields.push({
-    key: "name",
-    label: "NAME",
-    value: firstName + " " + lastName,
-  });
-
-  pass.secondaryFields.push({
-    key: "privileges",
-    label: "PRIVILEGES",
-    value: privileges,
-  });
-
-  pass.auxiliaryFields.push(
-    {
-      key: "fcc",
-      label: "FCC REGISTRATION NUMBER",
-      value: frn,
-      row: 0,
-    },
-    {
-      key: "granted",
-      label: "GRANT DATE",
-      value: grantDate.toISOString(),
-      dateStyle: "PKDateStyleLong",
-      row: 1,
-    },
-    {
-      key: "expiration",
-      label: "EXPIRATION DATE",
-      value: expireDate.toISOString(),
-      dateStyle: "PKDateStyleLong",
-      row: 1,
-    }
-  );
-
-  // Load pass as buffer
-  const buffer = pass.getAsBuffer();
-
-  // Bucket lifecycle
-  const lifecycleCommand = new PutBucketLifecycleConfigurationCommand({
-    Bucket: Resource.PassBucket.name,
-    LifecycleConfiguration: {
-      Rules: [
-        {
-          ID: "Delete objects after 10 minutes",
-          Status: "Enabled",
-          Filter: {
-            Prefix: "",
-          },
-          Expiration: {
-            Days: 1,
-          },
-          AbortIncompleteMultipartUpload: {
-            DaysAfterInitiation: 1,
-          },
+    // Create pass
+    const pass = await PKPass.from(
+      {
+        model: "src/hamradiowallet.pass",
+        certificates: {
+          wwdr,
+          signerCert,
+          signerKey,
         },
-      ],
-    },
-  });
+      },
+      {
+        serialNumber: frn,
+      }
+    );
 
-  try {
-    await s3.send(lifecycleCommand);
-  } catch (error) {
-    console.error("Error setting bucket lifecycle configuration:", error);
+    // Set pass fields
+    pass.setExpirationDate(expireDate);
+
+    pass.setBarcodes({
+      format: "PKBarcodeFormatQR",
+      message: "https://hamradiowallet.com/",
+      messageEncoding: "iso-8859-1",
+    });
+
+    pass.headerFields.push({
+      key: "callsign",
+      label: "CALL SIGN",
+      value: callsign,
+    });
+
+    pass.primaryFields.push({
+      key: "name",
+      label: "NAME",
+      value: firstName + " " + lastName,
+    });
+
+    pass.secondaryFields.push({
+      key: "privileges",
+      label: "PRIVILEGES",
+      value: privileges,
+    });
+
+    pass.auxiliaryFields.push(
+      {
+        key: "fcc",
+        label: "FCC REGISTRATION NUMBER",
+        value: frn,
+        row: 0,
+      },
+      {
+        key: "granted",
+        label: "GRANT DATE",
+        value: grantDate.toISOString(),
+        dateStyle: "PKDateStyleLong",
+        row: 1,
+      },
+      {
+        key: "expiration",
+        label: "EXPIRATION DATE",
+        value: expireDate.toISOString(),
+        dateStyle: "PKDateStyleLong",
+        row: 1,
+      }
+    );
+
+    // Load pass as buffer
+    const buffer = pass.getAsBuffer();
+
+    // Bucket lifecycle
+    const lifecycleCommand = new PutBucketLifecycleConfigurationCommand({
+      Bucket: Resource.PassBucket.name,
+      LifecycleConfiguration: {
+        Rules: [
+          {
+            ID: "Delete objects after 10 minutes",
+            Status: "Enabled",
+            Filter: {
+              Prefix: "",
+            },
+            Expiration: {
+              Days: 1,
+            },
+            AbortIncompleteMultipartUpload: {
+              DaysAfterInitiation: 1,
+            },
+          },
+        ],
+      },
+    });
+
+    try {
+      await s3.send(lifecycleCommand);
+    } catch (error) {
+      console.error("Error setting bucket lifecycle configuration:", error);
+    }
+
+    // Save pass to S3
+    key = crypto.randomUUID();
+    const putCommand = new PutObjectCommand({
+      Key: key + ".pkpass",
+      Bucket: Resource.PassBucket.name,
+      Body: buffer,
+    });
+
+    await s3.send(putCommand);
+  } else {
+    key = os || "Android";
   }
-
-  // Save pass to S3
-  const key = crypto.randomUUID();
-  const putCommand = new PutObjectCommand({
-    Key: key + ".pkpass",
-    Bucket: Resource.PassBucket.name,
-    Body: buffer,
-  });
-
-  await s3.send(putCommand);
 
   let name = firstName + " " + lastName;
 

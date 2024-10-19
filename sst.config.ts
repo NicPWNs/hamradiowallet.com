@@ -15,6 +15,8 @@ export default $config({
     const wwdrSecret = new sst.Secret("WWDRCert");
     const certSecret = new sst.Secret("SignerCert");
     const keySecret = new sst.Secret("SignerKey");
+    const clientEmail = new sst.Secret("ClientEmail");
+    const privateKey = new sst.Secret("PrivateKey");
 
     const passBucket = new sst.aws.Bucket("PassBucket", {
       public: false,
@@ -30,7 +32,7 @@ export default $config({
         domain: "api.hamradiowallet.com",
         cors: {
           allowMethods: ["GET"],
-          allowOrigins: ["https://hamradiowallet.com", "http://localhost:3000"],
+          allowOrigins: ["https://hamradiowallet.com"],
         },
       });
 
@@ -43,7 +45,7 @@ export default $config({
       });
 
       api.route("GET /get_pass", {
-        link: [passBucket],
+        link: [passBucket, clientEmail, privateKey],
         handler: "src/get_pass.handler",
       });
     }
@@ -54,7 +56,7 @@ export default $config({
         domain: "dev.hamradiowallet.com",
         cors: {
           allowMethods: ["GET"],
-          allowOrigins: ["https://hamradiowallet.com", "http://localhost:3000"],
+          allowOrigins: ["http://localhost:3000"],
         },
       });
 
@@ -67,7 +69,7 @@ export default $config({
       });
 
       dev.route("GET /get_pass", {
-        link: [passBucket],
+        link: [passBucket, clientEmail, privateKey],
         handler: "src/get_pass.handler",
       });
     }
