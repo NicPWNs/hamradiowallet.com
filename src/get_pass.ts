@@ -87,7 +87,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
         ],
         genericObjects: [
           {
-            id: "3388000000022742611.N1CPJ3",
+            id: "3388000000022742611.N1CPJ4",
             classId: "3388000000022742611.HAMRadioWalletPass",
             cardTitle: {
               defaultValue: {
