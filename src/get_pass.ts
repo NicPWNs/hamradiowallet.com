@@ -10,6 +10,12 @@ const s3 = new S3Client({});
 export async function handler(event: APIGatewayProxyEventV2) {
   // Get request parameter
   const id = event.queryStringParameters?.id;
+  const callsign = event.queryStringParameters?.callsign;
+  const name = event.queryStringParameters?.name;
+  const privileges = event.queryStringParameters?.privileges;
+  const frn = event.queryStringParameters?.frn;
+  const grantDate = event.queryStringParameters?.grantDate;
+  const expirationDate = event.queryStringParameters?.expirationDate;
 
   // Check for id parameter
   if (!id) {
@@ -31,7 +37,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
       payload: {
         genericClasses: [
           {
-            id: "3388000000022742611.HAMRadioWalletPass",
+            id: "3388000000022742611.HAMRadioWalletClass",
             classTemplateInfo: {
               cardTemplateOverride: {
                 cardRowTemplateInfos: [
@@ -63,7 +69,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
                         firstValue: {
                           fields: [
                             {
-                              fieldPath: "object.textModulesData['frn']",
+                              fieldPath: "object.textModulesData['grant_date']",
                             },
                           ],
                         },
@@ -80,6 +86,19 @@ export async function handler(event: APIGatewayProxyEventV2) {
                       },
                     },
                   },
+                  {
+                    oneItem: {
+                      item: {
+                        firstValue: {
+                          fields: [
+                            {
+                              fieldPath: "object.textModulesData['frn']",
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
                 ],
               },
             },
@@ -87,8 +106,8 @@ export async function handler(event: APIGatewayProxyEventV2) {
         ],
         genericObjects: [
           {
-            id: "3388000000022742611.N1CPJ6",
-            classId: "3388000000022742611.HAMRadioWalletPass",
+            id: "3388000000022742611." + crypto.randomUUID(),
+            classId: "3388000000022742611.HAMRadioWalletClass",
             cardTitle: {
               defaultValue: {
                 language: "en-US",
@@ -104,40 +123,44 @@ export async function handler(event: APIGatewayProxyEventV2) {
             header: {
               defaultValue: {
                 language: "en-US",
-                value: "N1CPJ",
+                value: callsign,
               },
             },
             logo: {
               sourceUri: {
-                uri: "https://github.com/NicPWNs/hamradiowallet.com/blob/3f3d200650ca68903816cb9bf54c0af879142ed9/public/International_amateur_radio_symbol.png",
+                uri: "https://raw.githubusercontent.com/NicPWNs/hamradiowallet.com/35e36390f208d23b37d8c74c8c5620003053bdf6/public/International_amateur_radio_symbol.jpg",
               },
             },
             textModulesData: [
               {
                 id: "name",
                 header: "NAME",
-                body: "Nicholas Jones",
+                body: name,
               },
               {
                 id: "privileges",
                 header: "PRIVILEGES",
-                body: "General",
+                body: privileges,
               },
               {
-                id: "frn",
-                header: "FRN",
-                body: "0123456789",
+                id: "grant_date",
+                header: "GRANT DATE",
+                body: grantDate,
               },
               {
                 id: "expiration_date",
                 header: "EXPIRATION DATE",
-                body: "August 24, 2024",
+                body: expirationDate,
+              },
+              {
+                id: "frn",
+                header: "FCC Registration Number",
+                body: frn,
               },
             ],
             barcode: {
               type: "QR_CODE",
               value: "https://hamradiowallet.com",
-              alternateText: "hamradiowallet.com",
             },
             hexBackgroundColor: "#ffffff",
           },

@@ -179,7 +179,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   };
 
   let key = "";
-
+  let name = firstName + " " + lastName;
   privileges = classMap[privileges] || privileges;
 
   if (os == "iOS") {
@@ -221,7 +221,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
     pass.primaryFields.push({
       key: "name",
       label: "NAME",
-      value: firstName + " " + lastName,
+      value: name,
     });
 
     pass.secondaryFields.push({
@@ -296,8 +296,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
   } else {
     key = os || "Android";
   }
-
-  let name = firstName + " " + lastName;
 
   // Success
   return {
