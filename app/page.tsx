@@ -102,7 +102,17 @@ export default function Home() {
         new Date(body.expireDate).toLocaleDateString("en-US", options)
       );
       setPasskitUrl(
-        `https://${env}.hamradiowallet.com/get_pass?id=${key}&callsign=${body.callsign}&privileges=${body.privileges}&name=${body.name}&frn=${body.frn}&grantDate=${grantDate}&expirationDate=${expireDate}`
+        `https://${env}.hamradiowallet.com/get_pass?id=${key}&callsign=${
+          body.callsign
+        }&privileges=${body.privileges}&name=${body.name}&frn=${
+          body.frn
+        }&grantDate=${new Date(body.grantDate).toLocaleDateString(
+          "en-US",
+          options
+        )}&expirationDate=${new Date(body.expireDate).toLocaleDateString(
+          "en-US",
+          options
+        )}`
       );
 
       setFlip(false);
