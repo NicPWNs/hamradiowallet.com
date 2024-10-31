@@ -8,7 +8,6 @@
 
 ## TODO
 
-- [ ] Create Google Wallet pass SVG.
 - [ ] Swap example pass based on device.
 - [ ] Fix dates being off by one in prod.
 - [ ] Fix Cron database download.
