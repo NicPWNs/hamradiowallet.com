@@ -4,7 +4,7 @@
 
 ## Example
 
-<img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass"/><img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass"/>
+<img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass"/> <img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass"/>
 
 ## TODO
 
