@@ -182,7 +182,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   let name = firstName + " " + lastName;
   privileges = classMap[privileges] || privileges;
 
-  if (os == "iOS") {
+  if (os == "iOS" || os == "Mac OS") {
     // Load certificate secrets
     const wwdr = Resource.WWDRCert.value;
     const signerCert = Resource.SignerCert.value;
@@ -294,7 +294,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
     await s3.send(putCommand);
   } else {
-    key = os || "Android";
+    key = "Android";
   }
 
   // Success

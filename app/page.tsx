@@ -198,9 +198,7 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5">
-            {deviceType == "Mac OS" ||
-            deviceType == "iOS" ||
-            deviceType == "Android" ? (
+            {deviceType == "Mac OS" || deviceType == "iOS" ? (
               <div className="flex flex-col items-center mb-5">
                 <a href={passkitUrl} target="_blank">
                   <Image
@@ -213,10 +211,14 @@ export default function Home() {
               </div>
             ) : (
               <div className="flex flex-col items-center mb-5">
-                <text className="mb-2 text-xs italic">
-                  Scan me with your phone.
-                </text>
-                <QRCode value={passkitUrl} size={128} />
+                <a href={passkitUrl} target="_blank">
+                  <Image
+                    src="/add_to_google_wallet.svg"
+                    alt="Add to Google Wallet"
+                    width={250}
+                    height={200}
+                  />
+                </a>
               </div>
             )}
           </div>

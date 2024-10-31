@@ -27,7 +27,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   let url = "";
 
-  if (id == "Mac OS") {
+  if (id == "Android") {
     // Create the JWT claims
     let claims = {
       iss: Resource.ClientEmail.value,
