@@ -8,7 +8,6 @@
 
 ## TODO
 
-- [ ] Swap example pass based on device.
 - [ ] Fix dates being off by one in prod.
 - [ ] Fix Cron database download.
 - [ ] Test with various call signs, missing zip codes, long names, expired licenses, light mode, etc.
