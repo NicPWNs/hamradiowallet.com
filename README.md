@@ -16,3 +16,4 @@
 - [ ] Fix favicon.
 - [ ] Remove construction banner.
 - [ ] Set up GitHub Sponsor.
+- [ ] Finalize README.
