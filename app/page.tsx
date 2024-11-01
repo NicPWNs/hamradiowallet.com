@@ -197,7 +197,7 @@ export default function Home() {
           </button>
         )}
         {passkitUrl && (
-          <div className="flex-col items-center space-y-5">
+          <div className="flex-col items-center space-y-5 text-blue-300 text-sm">
             {deviceType == "Mac OS" || deviceType == "iOS" ? (
               <div className="flex flex-col items-center mb-5">
                 <a href={passkitUrl} target="_blank">
@@ -207,6 +207,15 @@ export default function Home() {
                     width={200}
                     height={150}
                   />
+                </a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setDeviceType("Android");
+                  }}
+                >
+                  Not on an Apple device?
                 </a>
               </div>
             ) : (
@@ -218,6 +227,15 @@ export default function Home() {
                     width={250}
                     height={200}
                   />
+                </a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setDeviceType("iOS");
+                  }}
+                >
+                  On an Apple device?
                 </a>
               </div>
             )}
