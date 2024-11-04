@@ -17,7 +17,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/adm-zip": "^0.5.5",
-    "@types/jsonwebtoken": "^9.0.6",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/ua-parser-js": "^0.7.39",
     "adm-zip": "^0.5.16",
     "next": "15.0.1",
