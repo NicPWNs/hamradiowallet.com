@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import QRCode from "qrcode.react";
 import UAParser from "ua-parser-js";
 import CardFlip from "react-card-flip";
 import React, { useState, useEffect } from "react";
