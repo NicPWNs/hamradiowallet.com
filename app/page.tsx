@@ -23,6 +23,7 @@ export default function Home() {
   const [flip, setFlip] = useState(false);
   const [show, setShow] = useState(true);
   const [cardAnimation, setCardAnimation] = useState(false);
+  const [id, setId] = useState("");
   const [callSign, setCallSign] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [callSignError, setCallSignError] = useState("");
@@ -89,7 +90,7 @@ export default function Home() {
         month: "long",
         day: "numeric",
       };
-      let id = body.id;
+      setId(body.id);
       setCallsign(body.callsign);
       setFrn(body.frn);
       setName(body.name);
@@ -101,7 +102,7 @@ export default function Home() {
         new Date(body.expireDate).toLocaleDateString("en-US", options)
       );
       setPasskitUrl(
-        `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${
+        `https://${env}.hamradiowallet.com/get_pass?id=${body.id}&callsign=${
           body.callsign
         }&privileges=${body.privileges}&name=${body.name}&frn=${
           body.frn
@@ -212,6 +213,21 @@ export default function Home() {
                   onClick={(e) => {
                     e.preventDefault();
                     setDeviceType("Android");
+                    const options: Intl.DateTimeFormatOptions = {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    };
+                    setPasskitUrl(
+                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&name=${name}&frn=${frn}&grantDate=${new Date(
+                        grantDate
+                      ).toLocaleDateString(
+                        "en-US",
+                        options
+                      )}&expirationDate=${new Date(
+                        expireDate
+                      ).toLocaleDateString("en-US", options)}&os=Android`
+                    );
                   }}
                 >
                   Not on an Apple device?
@@ -232,6 +248,21 @@ export default function Home() {
                   onClick={(e) => {
                     e.preventDefault();
                     setDeviceType("iOS");
+                    const options: Intl.DateTimeFormatOptions = {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    };
+                    setPasskitUrl(
+                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&name=${name}&frn=${frn}&grantDate=${new Date(
+                        grantDate
+                      ).toLocaleDateString(
+                        "en-US",
+                        options
+                      )}&expirationDate=${new Date(
+                        expireDate
+                      ).toLocaleDateString("en-US", options)}&os=iOS`
+                    );
                   }}
                 >
                   On an Apple device?
