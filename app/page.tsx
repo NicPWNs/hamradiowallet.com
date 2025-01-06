@@ -90,7 +90,7 @@ export default function Home() {
         month: "long",
         day: "numeric",
       };
-      let key = body.key;
+      let id = body.id;
       setCallsign(body.callsign);
       setFrn(body.frn);
       setName(body.name);
@@ -102,7 +102,7 @@ export default function Home() {
         new Date(body.expireDate).toLocaleDateString("en-US", options)
       );
       setPasskitUrl(
-        `https://${env}.hamradiowallet.com/get_pass?id=${key}&callsign=${
+        `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${
           body.callsign
         }&privileges=${body.privileges}&name=${body.name}&frn=${
           body.frn
@@ -112,7 +112,7 @@ export default function Home() {
         )}&expirationDate=${new Date(body.expireDate).toLocaleDateString(
           "en-US",
           options
-        )}`
+        )}&os=${deviceType}`
       );
 
       setFlip(false);

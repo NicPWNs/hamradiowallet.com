@@ -16,6 +16,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   const frn = event.queryStringParameters?.frn;
   const grantDate = event.queryStringParameters?.grantDate;
   const expirationDate = event.queryStringParameters?.expirationDate;
+  const os = event.queryStringParameters?.os;
 
   // Check for id parameter
   if (!id) {
@@ -27,7 +28,18 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   let url = "";
 
-  if (id == "Android") {
+  if (os == "Mac OS" || os == "iOS") {
+    // Craft command for S3 get object
+    const getCommand = new GetObjectCommand({
+      Bucket: Resource.PassBucket.name,
+      Key: id + ".pkpass",
+    });
+
+    // Get S3 signed URL
+    url = await getSignedUrl(s3, getCommand, {
+      expiresIn: 600, // 10 minutes
+    });
+  } else {
     // Create the JWT claims
     let claims = {
       iss: Resource.ClientEmail.value,
@@ -174,17 +186,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
     });
 
     url = `https://pay.google.com/gp/v/save/${token}`;
-  } else {
-    // Craft command for S3 get object
-    const getCommand = new GetObjectCommand({
-      Bucket: Resource.PassBucket.name,
-      Key: id + ".pkpass",
-    });
-
-    // Get S3 signed URL
-    url = await getSignedUrl(s3, getCommand, {
-      expiresIn: 600, // 10 minutes
-    });
   }
   // Success
   return {
