@@ -17,4 +17,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
         run: |
-          npm i && npx sst deploy --stage production
+          npm i
+          npx sst deploy --stage production
