@@ -13,10 +13,10 @@ export async function handler() {
 
     const response = await fetch(url);
     if (!response.ok) {
+      console.log("HTTP error! status:", response.status);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const zipBuffer = Buffer.from(await response.arrayBuffer());
-
     const zip = new AdmZip(zipBuffer);
     const zipEntries = zip.getEntries();
 
@@ -40,11 +40,13 @@ export async function handler() {
         message: "Files processed and uploaded successfully.",
       }),
     };
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "An error occurred during processing." }),
+      body: JSON.stringify({
+        message: "An error occurred during processing.",
+        error: error.message,
+      }),
     };
   }
 }

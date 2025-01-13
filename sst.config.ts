@@ -75,8 +75,13 @@ export default $config({
     }
 
     new sst.aws.Cron("MyCronJob", {
-      schedule: "cron(0 0 ? * MON *)",
-      job: { handler: "src/cron.handler", link: [dataBucket] },
+      schedule: "cron(0 12 ? * * *)",
+      job: {
+        handler: "src/cron.handler",
+        timeout: "600 seconds",
+        memory: "2560 MB",
+        link: [dataBucket],
+      },
     });
 
     new sst.aws.Nextjs("MyWeb", {
