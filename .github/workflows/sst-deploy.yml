@@ -18,4 +18,5 @@ jobs:
           AWS_DEFAULT_REGION: "us-east-1"
         run: |
           npm i
+          npx sst types
           npx sst deploy --stage production
