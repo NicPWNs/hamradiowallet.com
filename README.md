@@ -9,7 +9,6 @@
 ## TODO
 
 - [ ] Test with missing zip codes, long names, expired licenses, light mode, etc.
-- [ ] Close open issue.
 - [ ] Fill about page.
 - [ ] Fix favicon.
 - [ ] Set up GitHub Sponsor.
