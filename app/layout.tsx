@@ -29,12 +29,7 @@ export default function RootLayout({
           media="(prefers-color-scheme: dark)"
         ></meta>
       </head>
-      <body className={inter.className}>
-        <div className="bg-yellow-400 text-black text-center py-1 text-sm font-medium">
-          🚧 Under Construction 🚧
-        </div>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

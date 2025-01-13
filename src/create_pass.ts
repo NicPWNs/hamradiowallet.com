@@ -142,9 +142,14 @@ export async function handler(event: APIGatewayProxyEventV2) {
   let addressZip = userData[row].split("|")[18].substring(0, 5);
   let frn = userData[row].split("|")[22];
 
+  function parseDate(dateStr: string): Date {
+    const [month, day, year] = dateStr.split("/").map(Number);
+    return new Date(Date.UTC(year, month - 1, day + 1));
+  }
+
   // Extract matching license data
-  let grantDate = new Date(licenseData[row].split("|")[7]);
-  let expireDate = new Date(licenseData[row].split("|")[8]);
+  let grantDate = parseDate(licenseData[row].split("|")[7]);
+  let expireDate = parseDate(licenseData[row].split("|")[8]);
 
   // Extract class data
   let privileges = classData[classRow].split("|")[5];
