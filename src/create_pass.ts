@@ -50,11 +50,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  const dataBucket = Resource.DataBucket.name;
-
   // Get EN.dat file
   let command = new GetObjectCommand({
-    Bucket: dataBucket,
+    Bucket: Resource.DataBucket.name,
     Key: "EN.dat",
   });
 
@@ -71,7 +69,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   // Get HD.dat file
   command = new GetObjectCommand({
-    Bucket: dataBucket,
+    Bucket: Resource.DataBucket.name,
     Key: "HD.dat",
   });
 
@@ -88,7 +86,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   // Get AM.dat file
   command = new GetObjectCommand({
-    Bucket: dataBucket,
+    Bucket: Resource.DataBucket.name,
     Key: "AM.dat",
   });
 
@@ -261,11 +259,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Load pass as buffer
   const buffer = pass.getAsBuffer();
 
-  const passBucket = Resource.PassBucket.name;
-
   // Bucket lifecycle
   const lifecycleCommand = new PutBucketLifecycleConfigurationCommand({
-    Bucket: passBucket,
+    Bucket: Resource.PassBucket.name,
     LifecycleConfiguration: {
       Rules: [
         {
@@ -295,7 +291,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   id = crypto.randomUUID();
   const putCommand = new PutObjectCommand({
     Key: id + ".pkpass",
-    Bucket: passBucket,
+    Bucket: Resource.PassBucket.name,
     Body: buffer,
   });
 
