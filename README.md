@@ -1,6 +1,6 @@
 # HAMRadioWallet.com
 
-> A web application that allows Amateur Radio operators to add their license to Apple Wallet and Google Wallet.
+> A web application enabling Amateur Radio operators to add their license to Apple Wallet and Google Wallet.
 
 Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
 
