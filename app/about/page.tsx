@@ -49,7 +49,10 @@ export default function About() {
             devices.
           </p>
           <p className="mb-6">
-            Made by <a href="https://nicpwns.com">@NicPWNs</a>
+            Made by{" "}
+            <a href="https://nicpwns.com" className="text-blue-500">
+              @NicPWNs
+            </a>
           </p>
         </div>
         <div className="flex mt-10">
