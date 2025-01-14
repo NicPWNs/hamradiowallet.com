@@ -8,7 +8,5 @@
 
 ## TODO
 
-- [ ] Test with missing zip codes, long names, expired licenses, light mode, etc.
-- [ ] Fix favicon.
 - [ ] Set up GitHub Sponsor.
 - [ ] Finalize README.

@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: "HAMRadioWallet.com",
   description:
     "An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.",
+  icons: {
+    apple: "/apple-icon.png",
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
