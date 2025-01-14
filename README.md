@@ -19,7 +19,9 @@ Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
 
 ## 🚀 Usage
 
-Visit [HAMRadioWallet.com](https://hamradiowallet.com), enter your amateur radio callsign and ZIP code, and add the generated pass to your device's wallet.
+1. Visit [HAMRadioWallet.com](https://hamradiowallet.com).
+2. Enter your amateur radio callsign and ZIP code.
+3. Add the generated pass to your device's wallet.
 
 ## 💡 Support & Contributions
 
