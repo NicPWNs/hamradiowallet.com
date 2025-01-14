@@ -10,7 +10,6 @@
 
 - [ ] Fix workflow.
 - [ ] Test with missing zip codes, long names, expired licenses, light mode, etc.
-- [ ] Fill about page.
 - [ ] Fix favicon.
 - [ ] Set up GitHub Sponsor.
 - [ ] Finalize README.
