@@ -1,6 +1,6 @@
 # HAMRadioWallet.com
 
-> A web application that allows Amateur Radio operators to add their license credentials to Apple Wallet and Google Wallet.
+> A web application that allows Amateur Radio operators to add their license to Apple Wallet and Google Wallet.
 
 Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
 
@@ -19,7 +19,7 @@ Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
 
 ## 🚀 Usage
 
-Simply visit [HAMRadioWallet.com](https://hamradiowallet.com), enter your amateur radio callsign and ZIP code, and add the generated pass to your device's wallet.
+Visit [HAMRadioWallet.com](https://hamradiowallet.com), enter your amateur radio callsign and ZIP code, and add the generated pass to your device's wallet.
 
 ## 💡 Support & Contributions
 
