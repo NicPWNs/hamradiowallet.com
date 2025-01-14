@@ -33,20 +33,23 @@ export default function About() {
     >
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="max-w-2xl text-center px-4">
-          <h1 className="text-3xl font-bold mb-6">About HAMRadioWallet</h1>
+          <h1 className="text-3xl font-bold mb-6">About HAMRadioWallet.com</h1>
           <p className="mb-4">
-            HAMRadioWallet is a simple web application that allows FCC Amateur
-            Radio operators to add their license credentials to Apple Wallet and
-            Google Wallet for convenient digital access.
+            HAMRadioWallet.com is a simple web application that allows FCC
+            Amateur Radio operators to add their license credentials to Apple
+            Wallet and Google Wallet for convenient digital access.
           </p>
           <p className="mb-4">
-            Simply enter your amateur radio callsign and other license details,
-            and the app will generate a digital pass that can be stored in your
+            Simply enter your amateur radio callsign and 5-digit ZIP code, and
+            the app will generate a digital pass that can be stored in your
             mobile device&apos;s wallet.
           </p>
-          <p className="mb-6">
+          <p className="mb-4">
             Compatible with both iOS (Apple Wallet) and Android (Google Wallet)
             devices.
+          </p>
+          <p className="mb-6">
+            Made by <a href="https://nicpwns.com">@NicPWNs</a>
           </p>
         </div>
         <div className="flex mt-10">
