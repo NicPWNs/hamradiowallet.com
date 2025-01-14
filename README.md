@@ -1,12 +1,35 @@
 # HAMRadioWallet.com
 
-> An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.
+> A free web application that allows FCC Amateur Radio operators to add their license credentials to Apple Wallet and Google Wallet.
 
-## Example
+Built and maintained by [NicPWNs](https://github.com/NicPWNs) // N1CPJ
 
-<img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass"/> <img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass"/>
+## 🪪 Examples
 
-## TODO
+<div align="center">
+  <div style="display: inline-block; margin: 10px;">
+    <p><strong>Apple Wallet</strong></p>
+    <img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass" style="border-radius: 10px;" />
+  </div>
+  <div style="display: inline-block; margin: 10px;">
+    <p><strong>Google Wallet</strong></p>
+    <img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass" style="border-radius: 10px;" />
+  </div>
+</div>
 
-- [ ] Set up GitHub Sponsor.
-- [ ] Finalize README.
+## 🚀 Usage
+
+Simply visit [HAMRadioWallet.com](https://hamradiowallet.com), enter your amateur radio callsign and ZIP code, and add the generated pass to your device's wallet.
+
+## 💡 Support & Contributions
+
+- Found a bug or have a question? [Open an issue](https://github.com/NicPWNs/hamradiowallet.com/issues)
+- Want to contribute? [Submit a pull request](https://github.com/NicPWNs/hamradiowallet.com/pulls)
+
+## ❤️ Sponsor
+
+If you find this project useful, consider [sponsoring the developer](https://github.com/sponsors/NicPWNs)!
+
+## ⚖️ Legal
+
+HAMRadioWallet.com is not affiliated with, endorsed by, or sponsored by the Federal Communications Commission (FCC). This is an independent project created to help amateur radio operators digitize their license information. All trademarks and registered trademarks are the property of their respective owners.
