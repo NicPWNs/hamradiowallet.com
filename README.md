@@ -1,8 +1,8 @@
 # HAMRadioWallet.com
 
-> A free web application that allows FCC Amateur Radio operators to add their license credentials to Apple Wallet and Google Wallet.
+> A web application that allows Amateur Radio operators to add their license credentials to Apple Wallet and Google Wallet.
 
-Built and maintained by [NicPWNs](https://github.com/NicPWNs) // N1CPJ
+Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
 
 ## 🪪 Examples
 
