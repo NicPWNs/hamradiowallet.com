@@ -89,10 +89,7 @@ export default function About() {
             </span>
           </div>
           <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-pink-400">
-            <a
-              href="https://github.com/NicPWNs/hamradiowallet.com"
-              target="_blank"
-            >
+            <a href="https://github.com/sponsors/NicPWNs" target="_blank">
               <FontAwesomeIcon icon={faHeart} size="2x" />
             </a>
             <span className="absolute px-2 py-1 mb-2 text-xs text-white transition-opacity duration-300 -translate-x-1/2 bg-gray-800 rounded-md opacity-0 pointer-events-none bottom-full left-1/2 group-hover:opacity-100 whitespace-nowrap">
