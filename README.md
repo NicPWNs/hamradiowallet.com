@@ -17,11 +17,15 @@ Built and maintained by [@NicPWNs](https://github.com/NicPWNs) / N1CPJ
  </tr>
 </table>
 
+> Like this project? Give it a [⭐ on GitHub!](https://github.com/NicPWNs/hamradiowallet.com)
+
 ## 🚀 Usage
 
 1. Visit [HAMRadioWallet.com](https://hamradiowallet.com).
 2. Enter your amateur radio callsign and ZIP code.
 3. Add the generated pass to your device's wallet.
+
+_Don't have a license?_ Use callsign **M0RSE** and ZIP code **02720** to test!
 
 ## 💡 Support & Contributions
 
