@@ -6,16 +6,16 @@ Built and maintained by [NicPWNs](https://github.com/NicPWNs) // N1CPJ
 
 ## 🪪 Examples
 
-<div align="center">
-  <div style="display: inline-block; margin: 10px;">
-    <p><strong>Apple Wallet</strong></p>
-    <img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass" style="border-radius: 10px;" />
-  </div>
-  <div style="display: inline-block; margin: 10px;">
-    <p><strong>Google Wallet</strong></p>
-    <img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass" style="border-radius: 10px;" />
-  </div>
-</div>
+<table align="center" border="0">
+ <tr>
+    <td align="center"><b>Apple Wallet</b></td>
+    <td align="center"><b>Google Wallet</b></td>
+ </tr>
+ <tr>
+    <td><img src="./public/apple_pass.svg" width="300" height="400" alt="Example Apple Wallet Pass" style="border-radius: 10px;" /></td>
+    <td><img src="./public/google_pass.svg" width="300" height="400" alt="Example Google Wallet Pass" style="border-radius: 10px;" /></td>
+ </tr>
+</table>
 
 ## 🚀 Usage
 
