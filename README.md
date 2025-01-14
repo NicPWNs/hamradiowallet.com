@@ -32,9 +32,11 @@ _Don't have a license?_ Use callsign **M0RSE** and ZIP code **02720** to test!
 - Found a bug or have a question? [Open an issue](https://github.com/NicPWNs/hamradiowallet.com/issues)
 - Want to contribute? [Submit a pull request](https://github.com/NicPWNs/hamradiowallet.com/pulls)
 
-## ❤️ Sponsor
+## ❤️ Support
 
-If you find this project useful, consider [sponsoring the developer](https://github.com/sponsors/NicPWNs)!
+Please tell your amateur radio operator clubs and friends!
+
+If you find this project useful, consider [sponsoring the developer](https://github.com/sponsors/NicPWNs).
 
 ## ⚖️ Legal
 
