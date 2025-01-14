@@ -44,17 +44,17 @@ export default function About() {
             the app will generate a digital pass that can be stored in your
             mobile device&apos;s wallet.
           </p>
-          <p className="mb-4">
+          <p className="mb-6">
             Compatible with both iOS (Apple Wallet) and Android (Google Wallet)
             devices.
           </p>
-          <p className="mb-6">
+          <p className="mb-4">
             Made by{" "}
             <a href="https://nicpwns.com" className="text-blue-500">
               @NicPWNs
             </a>
           </p>
-          <p className="mb-4">
+          <p className="mb-6">
             Learn more on{" "}
             <a
               href="https://github.com/NicPWNs/hamradiowallet.com"
