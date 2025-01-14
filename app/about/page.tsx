@@ -42,7 +42,7 @@ export default function About() {
           <p className="mb-4">
             Simply enter your amateur radio callsign and other license details,
             and the app will generate a digital pass that can be stored in your
-            mobile device's wallet.
+            mobile device&apos;s wallet.
           </p>
           <p className="mb-6">
             Compatible with both iOS (Apple Wallet) and Android (Google Wallet)
