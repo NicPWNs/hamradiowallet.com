@@ -54,6 +54,15 @@ export default function About() {
               @NicPWNs
             </a>
           </p>
+          <p className="mb-4">
+            Learn more on{" "}
+            <a
+              href="https://github.com/NicPWNs/hamradiowallet.com"
+              className="text-blue-500"
+            >
+              GitHub
+            </a>
+          </p>
         </div>
         <div className="flex mt-10">
           <div className="relative mx-2 text-gray-400 cursor-pointer group hover:text-blue-400">
