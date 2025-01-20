@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "An app to add FCC Amateur Radio Licenses to Apple Wallet and Google Wallet.",
   icons: {
     apple: "/apple-icon.png",
-    icon: "/favicon.ico",
+    icon: "/icon.ico",
   },
 };
 
