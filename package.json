@@ -30,7 +30,7 @@
     "ua-parser-js": "^1.0.39"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.145",
+    "@types/aws-lambda": "^8.10.147",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
