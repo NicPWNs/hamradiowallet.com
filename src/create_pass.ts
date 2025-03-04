@@ -117,6 +117,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   for (let i = 0; i < userData.length; i++) {
     if (userData[i].match(callsign)) {
       row = i;
+      // No break to get the last matching row
     }
   }
 
