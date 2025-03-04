@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 import CardFlip from "react-card-flip";
 import React, { useState, useEffect } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
@@ -161,7 +161,8 @@ export default function Home() {
     }
 
     // Get device type
-    const agent = new UAParser(navigator.userAgent).getResult();
+    const parser = new UAParser(navigator.userAgent);
+    const agent = parser.getResult();
     setDeviceType(agent.os.name as string);
 
     return () => clearTimeout(timer);
