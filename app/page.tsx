@@ -164,7 +164,6 @@ export default function Home() {
     const parser = new UAParser(navigator.userAgent);
     const agent = parser.getResult();
     setDeviceType(agent.os.name as string);
-    console.log(agent.os.name);
 
     return () => clearTimeout(timer);
   }, []);
