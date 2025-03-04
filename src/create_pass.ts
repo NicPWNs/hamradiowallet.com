@@ -115,8 +115,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Find row with matching callsign
   let row = 0;
   for (let i = 0; i < userData.length; i++) {
-    if (userData[i].match(callsign)) {
+    const fields = userData[i].split("|");
+    if (fields[4] === callsign) {
       row = i;
+      break;
     }
   }
 
