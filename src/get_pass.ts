@@ -28,7 +28,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   let url = "";
 
-  if (os == " macOS" || os == "iOS") {
+  if (os == "macOS" || os == "iOS") {
     // Craft command for S3 get object
     const getCommand = new GetObjectCommand({
       Bucket: Resource.PassBucket.name,
