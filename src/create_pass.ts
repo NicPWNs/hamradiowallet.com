@@ -123,8 +123,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Find row with matching callsign for class
   let classRow = 0;
   for (let i = 0; i < classData.length; i++) {
-    if (classData[i].match(callsign)) {
+    const fields = classData[i].split("|");
+    if (fields[4] === callsign) {
       classRow = i;
+      break;
     }
   }
 
