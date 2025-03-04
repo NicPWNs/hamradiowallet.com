@@ -200,7 +200,7 @@ export default function Home() {
         )}
         {passkitUrl && (
           <div className="flex-col items-center space-y-5 text-blue-300 text-sm">
-            {deviceType == "Mac OS" || deviceType == "iOS" ? (
+            {deviceType == " macOS" || deviceType == "iOS" ? (
               <div className="flex flex-col items-center mb-5">
                 <a href={passkitUrl} target="_blank">
                   <Image
@@ -285,7 +285,7 @@ export default function Home() {
                 : "cursor-pointer rounded-2xl shadow-lg shadow-black"
             }
           >
-            {deviceType == "Mac OS" || deviceType == "iOS" ? (
+            {deviceType == " macOS" || deviceType == "iOS" ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
