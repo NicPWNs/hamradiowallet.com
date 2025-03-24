@@ -21,7 +21,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/ua-parser-js": "^0.7.39",
     "adm-zip": "^0.5.16",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.21",
     "jsonwebtoken": "^9.0.2",
     "next": "15.2.3",
     "passkit-generator": "^3.3.1",
