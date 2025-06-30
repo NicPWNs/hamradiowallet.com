@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
-    "@types/node": "^22",
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
