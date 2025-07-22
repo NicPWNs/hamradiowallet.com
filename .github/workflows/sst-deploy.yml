@@ -1,4 +1,6 @@
 name: SST Deploy
+permissions:
+  contents: read
 on:
   push:
     branches:
