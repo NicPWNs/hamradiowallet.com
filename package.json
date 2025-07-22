@@ -25,9 +25,9 @@
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.1",
     "passkit-generator": "^3.3.1",
-    "react": "^19",
+    "react": "^19.1",
     "react-card-flip": "^1.2.3",
-    "react-dom": "^19",
+    "react-dom": "^19.1",
     "sst": "^3.9.23",
     "ua-parser-js": "^2.0.2"
   },
