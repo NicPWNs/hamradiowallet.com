@@ -16,7 +16,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@tailwindcss/postcss": "^4.0.9",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/adm-zip": "^0.5.7",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/ua-parser-js": "^0.7.39",
