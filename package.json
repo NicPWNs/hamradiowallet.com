@@ -24,7 +24,7 @@
     "autoprefixer": "^10.4.21",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.1",
-    "passkit-generator": "^3.3.1",
+    "passkit-generator": "^3.4.0",
     "react": "^19.1",
     "react-card-flip": "^1.2.3",
     "react-dom": "^19.1",
