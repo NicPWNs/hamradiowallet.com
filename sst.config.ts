@@ -26,7 +26,6 @@ export default $config({
       public: false,
     });
 
-    // Production API
     if ($app.stage === "production") {
       const api = new sst.aws.ApiGatewayV2("MyApi", {
         domain: "api.hamradiowallet.com",
@@ -45,30 +44,6 @@ export default $config({
       });
 
       api.route("GET /get_pass", {
-        link: [passBucket, clientEmail, privateKey],
-        handler: "src/get_pass.handler",
-      });
-    }
-
-    // Development API
-    if ($app.stage === "nic") {
-      const dev = new sst.aws.ApiGatewayV2("DevApi", {
-        domain: "dev.hamradiowallet.com",
-        cors: {
-          allowMethods: ["GET"],
-          allowOrigins: ["http://localhost:3000"],
-        },
-      });
-
-      dev.route("GET /create_pass", {
-        link: [passBucket, dataBucket, wwdrSecret, certSecret, keySecret],
-        handler: "src/create_pass.handler",
-        memory: "2560 MB",
-        timeout: "60 seconds",
-        copyFiles: [{ from: "src/hamradiowallet.pass" }],
-      });
-
-      dev.route("GET /get_pass", {
         link: [passBucket, clientEmail, privateKey],
         handler: "src/get_pass.handler",
       });
