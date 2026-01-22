@@ -13,35 +13,6 @@ jobs:
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Pulumi CLI (v4)
-        run: |
-          # Install Pulumi v4 to ensure language hosts support the -root flag
-          curl -fsSL https://get.pulumi.com | sh -s -- v4
-          echo "## Pulumi v4 installed to $HOME/.pulumi/bin"
-        env:
-          PULUMI_SKIP_UPDATE_CHECK: "1"
-
-      - name: Add Pulumi to PATH
-        run: echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
-
-      - name: Pulumi & environment diagnostics
-        run: |
-          echo "Pulumi version:" && pulumi version || true
-          echo "Which pulumi:" && which pulumi || true
-          echo "Pulumi bin listing:" && ls -l $HOME/.pulumi/bin || true
-          echo "Which pulumi-language-nodejs:" && which pulumi-language-nodejs || true
-          echo "pulumi-language-nodejs --help:" && pulumi-language-nodejs --help || true
-          echo "Node version:" && node --version
-          echo "npm version:" && npm --version
-
-      - name: Let SST install matching Pulumi components
-        run: |
-          npx sst@latest install || true
 
       - name: Deploy app
         env:
@@ -49,6 +20,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
         run: |
-          npm ci --legacy-peer-deps
+          npm i --legacy-peer-deps
           npx sst refresh --stage production
           npx sst deploy --stage production
