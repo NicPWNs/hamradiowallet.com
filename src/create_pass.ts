@@ -50,7 +50,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Get EN.dat file
+  // Get EN.dat file - User Data
   let command = new GetObjectCommand({
     Bucket: Resource.DataBucket.name,
     Key: "EN.dat",
@@ -58,7 +58,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   const userDataresponse = await s3.send(command);
 
-  // Check EN.dat
+  // Check EN.dat - User Data
   if (!userDataresponse.Body) {
     console.error("No EN.dat");
     return {
@@ -67,7 +67,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Get HD.dat file
+  // Get HD.dat file - License Data
   command = new GetObjectCommand({
     Bucket: Resource.DataBucket.name,
     Key: "HD.dat",
@@ -75,7 +75,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   const licenseDataresponse = await s3.send(command);
 
-  // Check HD.dat
+  // Check HD.dat - License Data
   if (!licenseDataresponse.Body) {
     console.error("No HD.dat");
     return {
@@ -84,7 +84,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Get AM.dat file
+  // Get AM.dat file - Class Data
   command = new GetObjectCommand({
     Bucket: Resource.DataBucket.name,
     Key: "AM.dat",
@@ -92,7 +92,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   const classDataresponse = await s3.send(command);
 
-  // Check AM.dat
+  // Check AM.dat - Class Data
   if (!classDataresponse.Body) {
     console.error("No AM.dat");
     return {
@@ -122,12 +122,32 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Find row with matching callsign for class
+  // Find row with matching class data. Prefer the Unique System Identifier
+  // (USI, field 2 in EN/AM -> index 1) and pick the last matching AM row.
+  // If no USI match is found, fall back to matching by callsign (last match).
+  const userFields = userData[row].split("|");
+  const uniqueId = userFields[1];
+
   let classRow = 0;
+  // Collect AM rows that match the USI
+  const usiMatches: number[] = [];
   for (let i = 0; i < classData.length; i++) {
     const fields = classData[i].split("|");
-    if (fields[4] === callsign) {
-      classRow = i;
-      break;
+    if (fields[1] === uniqueId) {
+      usiMatches.push(i);
+    }
+  }
+
+  if (usiMatches.length > 0) {
+    // Prefer the last USI match (mirrors userData behavior of taking last match)
+    classRow = usiMatches[usiMatches.length - 1];
+  } else {
+    // Fallback: search for callsign and prefer the last occurrence
+    for (let i = 0; i < classData.length; i++) {
+      const fields = classData[i].split("|");
+      if (fields.indexOf(callsign) !== -1) {
+        classRow = i;
+      }
     }
   }
 
@@ -154,8 +174,21 @@ export async function handler(event: APIGatewayProxyEventV2) {
   let grantDate = parseDate(licenseData[row].split("|")[7]);
   let expireDate = parseDate(licenseData[row].split("|")[8]);
 
-  // Extract class data
-  let privileges = classData[classRow].split("|")[5];
+  // Extract class data (privileges). Try to find the callsign in the AM row
+  // and take the following field as the class. Fall back to common indexes
+  // if the callsign isn't present.
+  let privileges = "";
+  if (classData[classRow]) {
+    const fields = classData[classRow].split("|");
+    const csIndex = fields.indexOf(callsign);
+    if (csIndex !== -1 && fields.length > csIndex + 1) {
+      privileges = fields[csIndex + 1];
+    } else if (fields[16]) {
+      privileges = fields[16];
+    } else if (fields[5]) {
+      privileges = fields[5];
+    }
+  }
 
   // Seeded example, ZIP: 02720
   if (callsign == "M0RSE") {
@@ -206,7 +239,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
     },
     {
       serialNumber: frn,
-    }
+    },
   );
 
   // Set pass fields
@@ -256,7 +289,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
       value: expireDate.toISOString(),
       dateStyle: "PKDateStyleLong",
       row: 1,
-    }
+    },
   );
 
   // Load pass as buffer
