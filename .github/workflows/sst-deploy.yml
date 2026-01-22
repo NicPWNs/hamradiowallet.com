@@ -18,10 +18,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Pulumi CLI
+      - name: Install Pulumi CLI (v4)
         run: |
-          curl -fsSL https://get.pulumi.com | sh
-          echo "## Pulumi installed to $HOME/.pulumi/bin"
+          # Install Pulumi v4 to ensure language hosts support the -root flag
+          curl -fsSL https://get.pulumi.com | sh -s -- v4
+          echo "## Pulumi v4 installed to $HOME/.pulumi/bin"
         env:
           PULUMI_SKIP_UPDATE_CHECK: "1"
 
