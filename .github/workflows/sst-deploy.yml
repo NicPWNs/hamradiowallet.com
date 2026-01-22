@@ -25,12 +25,14 @@ jobs:
         env:
           PULUMI_SKIP_UPDATE_CHECK: "1"
 
+      - name: Add Pulumi to PATH
+        run: echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
+
       - name: Deploy app
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
-          PATH: ${{ env.PATH }}:$HOME/.pulumi/bin
         run: |
           npm ci --legacy-peer-deps
           npx sst refresh --stage production
