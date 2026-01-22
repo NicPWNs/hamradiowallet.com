@@ -28,6 +28,20 @@ jobs:
       - name: Add Pulumi to PATH
         run: echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
 
+      - name: Pulumi & environment diagnostics
+        run: |
+          echo "Pulumi version:" && pulumi version || true
+          echo "Which pulumi:" && which pulumi || true
+          echo "Pulumi bin listing:" && ls -l $HOME/.pulumi/bin || true
+          echo "Which pulumi-language-nodejs:" && which pulumi-language-nodejs || true
+          echo "pulumi-language-nodejs --help:" && pulumi-language-nodejs --help || true
+          echo "Node version:" && node --version
+          echo "npm version:" && npm --version
+
+      - name: Let SST install matching Pulumi components
+        run: |
+          npx sst@latest install || true
+
       - name: Deploy app
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
