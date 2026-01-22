@@ -13,12 +13,25 @@ jobs:
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Pulumi CLI
+        run: |
+          curl -fsSL https://get.pulumi.com | sh
+          echo "## Pulumi installed to $HOME/.pulumi/bin"
+        env:
+          PULUMI_SKIP_UPDATE_CHECK: "1"
+
       - name: Deploy app
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
+          PATH: ${{ env.PATH }}:$HOME/.pulumi/bin
         run: |
-          npm i --legacy-peer-deps
+          npm ci --legacy-peer-deps
           npx sst refresh --stage production
           npx sst deploy --stage production
