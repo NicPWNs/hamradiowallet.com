@@ -140,7 +140,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
             },
             logo: {
               sourceUri: {
-                uri: "https://raw.githubusercontent.com/NicPWNs/hamradiowallet.com/35e36390f208d23b37d8c74c8c5620003053bdf6/public/International_amateur_radio_symbol.jpg",
+                uri: "https://raw.githubusercontent.com/NicPWNs/hamradiowallet.com/main/public/International_amateur_radio_symbol.jpg",
               },
             },
             textModulesData: [

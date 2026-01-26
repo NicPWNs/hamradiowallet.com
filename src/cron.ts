@@ -40,12 +40,13 @@ export async function handler() {
         message: "Files processed and uploaded successfully.",
       }),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     return {
       statusCode: 500,
       body: JSON.stringify({
         message: "An error occurred during processing.",
-        error: error.message,
+        error: message,
       }),
     };
   }

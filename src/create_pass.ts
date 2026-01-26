@@ -112,23 +112,32 @@ export async function handler(event: APIGatewayProxyEventV2) {
   licenseData = licenseData.split("\n");
   classData = classData.split("\n");
 
-  // Find row with matching callsign
-  let row = 0;
+  // Find row with matching callsign using exact field match
+  let row = -1;
   for (let i = 0; i < userData.length; i++) {
-    if (userData[i].match(callsign)) {
+    const fields = userData[i].split("|");
+    // Callsign is typically in field index 4
+    if (fields[4] === callsign) {
       row = i;
       // No break to get the last matching row
     }
+  }
+
+  // Safe array field access helper
+  function getField(line: string | undefined, index: number): string {
+    if (!line) return "";
+    const fields = line.split("|");
+    return fields[index] ?? "";
   }
 
   // Find row with matching callsign for class
   // Find row with matching class data. Prefer the Unique System Identifier
   // (USI, field 2 in EN/AM -> index 1) and pick the last matching AM row.
   // If no USI match is found, fall back to matching by callsign (last match).
-  const userFields = userData[row].split("|");
-  const uniqueId = userFields[1];
+  const userFields = row >= 0 ? userData[row].split("|") : [];
+  const uniqueId = userFields[1] ?? "";
 
-  let classRow = 0;
+  let classRow = -1;
   // Collect AM rows that match the USI
   const usiMatches: number[] = [];
   for (let i = 0; i < classData.length; i++) {
@@ -141,7 +150,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   if (usiMatches.length > 0) {
     // Prefer the last USI match (mirrors userData behavior of taking last match)
     classRow = usiMatches[usiMatches.length - 1];
-  } else {
+  } else if (uniqueId) {
     // Fallback: search for callsign and prefer the last occurrence
     for (let i = 0; i < classData.length; i++) {
       const fields = classData[i].split("|");
@@ -152,33 +161,35 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Check if callsign found
-  if (row == 0 && callsign != "M0RSE") {
+  if (row === -1 && callsign !== "M0RSE") {
     return {
       statusCode: 404,
       body: JSON.stringify({ error: "Call sign not found." }),
     };
   }
 
-  // Extract matching user data
-  let firstName = userData[row].split("|")[8];
-  let lastName = userData[row].split("|")[10];
-  let addressZip = userData[row].split("|")[18].substring(0, 5);
-  let frn = userData[row].split("|")[22];
+  // Extract matching user data with bounds checking
+  let firstName = getField(userData[row], 8);
+  let lastName = getField(userData[row], 10);
+  let addressZip = getField(userData[row], 18).substring(0, 5);
+  let frn = getField(userData[row], 22);
 
   function parseDate(dateStr: string): Date {
+    if (!dateStr) return new Date();
     const [month, day, year] = dateStr.split("/").map(Number);
-    return new Date(Date.UTC(year, month - 1, day + 1));
+    if (isNaN(month) || isNaN(day) || isNaN(year)) return new Date();
+    return new Date(Date.UTC(year, month - 1, day));
   }
 
-  // Extract matching license data
-  let grantDate = parseDate(licenseData[row].split("|")[7]);
-  let expireDate = parseDate(licenseData[row].split("|")[8]);
+  // Extract matching license data with bounds checking
+  let grantDate = parseDate(getField(licenseData[row], 7));
+  let expireDate = parseDate(getField(licenseData[row], 8));
 
   // Extract class data (privileges). Try to find the callsign in the AM row
   // and take the following field as the class. Fall back to common indexes
   // if the callsign isn't present.
   let privileges = "";
-  if (classData[classRow]) {
+  if (classRow >= 0 && classData[classRow]) {
     const fields = classData[classRow].split("|");
     const csIndex = fields.indexOf(callsign);
     if (csIndex !== -1 && fields.length > csIndex + 1) {
@@ -227,20 +238,29 @@ export async function handler(event: APIGatewayProxyEventV2) {
   const signerCert = Resource.SignerCert.value;
   const signerKey = Resource.SignerKey.value;
 
-  // Create pass
-  const pass = await PKPass.from(
-    {
-      model: "src/hamradiowallet.pass",
-      certificates: {
-        wwdr,
-        signerCert,
-        signerKey,
+  // Create pass with error handling
+  let pass;
+  try {
+    pass = await PKPass.from(
+      {
+        model: "src/hamradiowallet.pass",
+        certificates: {
+          wwdr,
+          signerCert,
+          signerKey,
+        },
       },
-    },
-    {
-      serialNumber: frn,
-    },
-  );
+      {
+        serialNumber: frn,
+      },
+    );
+  } catch (error) {
+    console.error("Failed to create PKPass:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Failed to create pass." }),
+    };
+  }
 
   // Set pass fields
   pass.setExpirationDate(expireDate);
@@ -293,7 +313,16 @@ export async function handler(event: APIGatewayProxyEventV2) {
   );
 
   // Load pass as buffer
-  const buffer = pass.getAsBuffer();
+  let buffer;
+  try {
+    buffer = pass.getAsBuffer();
+  } catch (error) {
+    console.error("Failed to generate pass buffer:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Failed to generate pass." }),
+    };
+  }
 
   // Bucket lifecycle
   const lifecycleCommand = new PutBucketLifecycleConfigurationCommand({
