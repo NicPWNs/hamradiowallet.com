@@ -23,7 +23,7 @@
     "adm-zip": "^0.5.17",
     "autoprefixer": "^10.4.27",
     "jsonwebtoken": "^9.0.2",
-    "next": "16.2.2",
+    "next": "16.2.3",
     "passkit-generator": "^3.5.7",
     "react": "^19.2",
     "react-card-flip": "^1.2.3",
