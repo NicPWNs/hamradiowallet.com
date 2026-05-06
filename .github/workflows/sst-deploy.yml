@@ -26,5 +26,5 @@ jobs:
           AWS_DEFAULT_REGION: "us-east-1"
         run: |
           npm i --legacy-peer-deps
-          npx sst@latest refresh --stage production
-          npx sst@latest deploy --stage production
+          npx sst refresh --stage production
+          npx sst deploy --stage production
