@@ -8,6 +8,7 @@ export default $config({
       home: "aws",
       providers: {
         aws: { region: "us-east-1" },
+        cloudflare: "6.13.0",
       },
     };
   },
@@ -28,7 +29,10 @@ export default $config({
 
     if ($app.stage === "production") {
       const api = new sst.aws.ApiGatewayV2("MyApi", {
-        domain: "api.hamradiowallet.com",
+        domain: {
+          name: "api.hamradiowallet.com",
+          dns: sst.cloudflare.dns(),
+        },
         cors: {
           allowMethods: ["GET"],
           allowOrigins: ["https://hamradiowallet.com"],
@@ -63,6 +67,7 @@ export default $config({
       domain: {
         name: "hamradiowallet.com",
         redirects: ["www.hamradiowallet.com"],
+        dns: sst.cloudflare.dns(),
       },
       environment: {
         ENV: $app.stage,
