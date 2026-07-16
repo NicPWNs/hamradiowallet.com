@@ -33,7 +33,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Server-side callsign validation
-  const callsignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{2,3}$/;
+  const callsignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{1,3}$/;
   if (!callsignRegex.test(callsign)) {
     return {
       statusCode: 422,
