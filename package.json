@@ -20,7 +20,7 @@
     "@types/adm-zip": "^0.5.8",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/ua-parser-js": "^0.7.39",
-    "adm-zip": "^0.5.18",
+    "adm-zip": "^0.6.0",
     "autoprefixer": "^10.5.2",
     "jsonwebtoken": "^9.0.2",
     "next": "16.2.9",
