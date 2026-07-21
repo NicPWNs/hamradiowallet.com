@@ -112,17 +112,6 @@ export async function handler(event: APIGatewayProxyEventV2) {
   licenseData = licenseData.split("\n");
   classData = classData.split("\n");
 
-  // Find row with matching callsign using exact field match
-  let row = -1;
-  for (let i = 0; i < userData.length; i++) {
-    const fields = userData[i].split("|");
-    // Callsign is typically in field index 4
-    if (fields[4] === callsign) {
-      row = i;
-      // No break to get the last matching row
-    }
-  }
-
   // Safe array field access helper
   function getField(line: string | undefined, index: number): string {
     if (!line) return "";
@@ -130,13 +119,73 @@ export async function handler(event: APIGatewayProxyEventV2) {
     return fields[index] ?? "";
   }
 
-  // Find row with matching callsign for class
+  // Parse an FCC "MM/DD/YYYY" date string into a UTC Date
+  function parseDate(dateStr: string): Date {
+    if (!dateStr) return new Date();
+    const [month, day, year] = dateStr.split("/").map(Number);
+    if (isNaN(month) || isNaN(day) || isNaN(year)) return new Date();
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  // A callsign can appear in the FCC data more than once (renewed, re-granted
+  // after a lapse, or previously held by someone else). Collect every entity
+  // (EN.dat) row for the callsign so we can pick the correct license below.
+  const candidateRows: number[] = [];
+  for (let i = 0; i < userData.length; i++) {
+    // Call sign is field index 4
+    if (userData[i].split("|")[4] === callsign) {
+      candidateRows.push(i);
+    }
+  }
+
+  // Map each candidate's Unique System Identifier (USI) to its license (HD.dat)
+  // row so we can inspect license status and expiration. Matching by USI rather
+  // than by line index keeps selection correct even if EN.dat and HD.dat are
+  // not perfectly aligned.
+  const candidateUsis = new Set(
+    candidateRows.map((i) => getField(userData[i], 1)).filter(Boolean),
+  );
+  const licenseByUsi: { [usi: string]: string } = {};
+  if (candidateUsis.size > 0) {
+    for (let i = 0; i < licenseData.length; i++) {
+      const usi = licenseData[i].split("|")[1];
+      if (candidateUsis.has(usi)) {
+        licenseByUsi[usi] = licenseData[i];
+      }
+    }
+  }
+
+  // Choose the best record for the callsign: prefer an Active license
+  // (HD.dat license_status, field index 5 === "A"), then the latest expiration
+  // date. This avoids picking a stale Cancelled/Expired record just because it
+  // sorts last in the file, which produced already-expired passes with wrong
+  // grant/expiration dates.
+  let row = -1;
+  let bestActive = -1;
+  let bestExpire = -Infinity;
+  for (const i of candidateRows) {
+    const usi = getField(userData[i], 1);
+    const licenseLine = licenseByUsi[usi];
+    const active = getField(licenseLine, 5) === "A" ? 1 : 0;
+    const expire = parseDate(getField(licenseLine, 8)).getTime();
+    if (
+      row === -1 ||
+      active > bestActive ||
+      (active === bestActive && expire > bestExpire)
+    ) {
+      row = i;
+      bestActive = active;
+      bestExpire = expire;
+    }
+  }
+
+  // The chosen record's USI and its license (HD.dat) row, matched by USI.
+  const uniqueId = row >= 0 ? getField(userData[row], 1) : "";
+  const licenseLine = licenseByUsi[uniqueId];
+
   // Find row with matching class data. Prefer the Unique System Identifier
   // (USI, field 2 in EN/AM -> index 1) and pick the last matching AM row.
   // If no USI match is found, fall back to matching by callsign (last match).
-  const userFields = row >= 0 ? userData[row].split("|") : [];
-  const uniqueId = userFields[1] ?? "";
-
   let classRow = -1;
   // Collect AM rows that match the USI
   const usiMatches: number[] = [];
@@ -174,16 +223,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
   let addressZip = getField(userData[row], 18).substring(0, 5);
   let frn = getField(userData[row], 22);
 
-  function parseDate(dateStr: string): Date {
-    if (!dateStr) return new Date();
-    const [month, day, year] = dateStr.split("/").map(Number);
-    if (isNaN(month) || isNaN(day) || isNaN(year)) return new Date();
-    return new Date(Date.UTC(year, month - 1, day));
-  }
-
-  // Extract matching license data with bounds checking
-  let grantDate = parseDate(getField(licenseData[row], 7));
-  let expireDate = parseDate(getField(licenseData[row], 8));
+  // Extract license dates from the chosen record (matched by USI)
+  let grantDate = parseDate(getField(licenseLine, 7));
+  let expireDate = parseDate(getField(licenseLine, 8));
 
   // Extract class data (privileges). Try to find the callsign in the AM row
   // and take the following field as the class. Fall back to common indexes
