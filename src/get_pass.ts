@@ -13,6 +13,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   const callsign = event.queryStringParameters?.callsign;
   const name = event.queryStringParameters?.name;
   const privileges = event.queryStringParameters?.privileges;
+  const privilegesLabel = event.queryStringParameters?.privilegesLabel;
   const frn = event.queryStringParameters?.frn;
   const grantDate = event.queryStringParameters?.grantDate;
   const expirationDate = event.queryStringParameters?.expirationDate;
@@ -151,7 +152,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
               },
               {
                 id: "privileges",
-                header: "PRIVILEGES",
+                // Amateur licenses report an operator class; services without
+                // one label this row differently.
+                header: privilegesLabel || "PRIVILEGES",
                 body: privileges,
               },
               {

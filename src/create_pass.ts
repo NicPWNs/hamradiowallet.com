@@ -1,5 +1,6 @@
 import { Resource } from "sst";
 import { PKPass } from "passkit-generator";
+import { serviceForCallsign } from "./services";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import {
   S3Client,
@@ -10,6 +11,11 @@ import {
 
 // Initialize S3 client
 const s3 = new S3Client({});
+
+// Seeded examples so the site can be tried without a license: M0RSE for
+// amateur, MORS001 for GMRS. The FCC issues neither prefix in those services,
+// so they cannot collide with a real call sign.
+const DEMO_CALLSIGNS = ["M0RSE", "MORS001"];
 
 export async function handler(event: APIGatewayProxyEventV2) {
   // Get request parameters
@@ -32,9 +38,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Server-side callsign validation
-  const callsignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{1,3}$/;
-  if (!callsignRegex.test(callsign)) {
+  // Server-side callsign validation. The call sign's format also decides
+  // which radio service to look it up in.
+  const service = serviceForCallsign(callsign);
+  if (!service) {
     return {
       statusCode: 422,
       body: JSON.stringify({ message: "Provided 'callsign' is malformed." }),
@@ -50,16 +57,29 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Get EN.dat file - User Data
-  let command = new GetObjectCommand({
-    Bucket: Resource.DataBucket.name,
-    Key: "EN.dat",
-  });
+  // Read one of this service's .dat files from the data bucket and split it
+  // into rows. The cron job stores each service's files under its own prefix.
+  const dataPrefix = service.prefix;
+  async function readData(name: string): Promise<string[] | null> {
+    const response = await s3.send(
+      new GetObjectCommand({
+        Bucket: Resource.DataBucket.name,
+        Key: dataPrefix + name,
+      }),
+    );
 
-  const userDataresponse = await s3.send(command);
+    if (!response.Body) {
+      return null;
+    }
+
+    return (await response.Body.transformToString()).split("\n");
+  }
+
+  // Get EN.dat file - User Data
+  const userData = await readData("EN.dat");
 
   // Check EN.dat - User Data
-  if (!userDataresponse.Body) {
+  if (!userData) {
     console.error("No EN.dat");
     return {
       statusCode: 500,
@@ -68,15 +88,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Get HD.dat file - License Data
-  command = new GetObjectCommand({
-    Bucket: Resource.DataBucket.name,
-    Key: "HD.dat",
-  });
-
-  const licenseDataresponse = await s3.send(command);
+  const licenseData = await readData("HD.dat");
 
   // Check HD.dat - License Data
-  if (!licenseDataresponse.Body) {
+  if (!licenseData) {
     console.error("No HD.dat");
     return {
       statusCode: 500,
@@ -84,33 +99,23 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Get AM.dat file - Class Data
-  command = new GetObjectCommand({
-    Bucket: Resource.DataBucket.name,
-    Key: "AM.dat",
-  });
+  // Get AM.dat file - Class Data. Only amateur licenses carry an operator
+  // class, so services without one are left with no class data to search.
+  let classData: string[] = [];
+  if (service.files.includes("AM.dat")) {
+    const data = await readData("AM.dat");
 
-  const classDataresponse = await s3.send(command);
+    // Check AM.dat - Class Data
+    if (!data) {
+      console.error("No AM.dat");
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "No AM.dat" }),
+      };
+    }
 
-  // Check AM.dat - Class Data
-  if (!classDataresponse.Body) {
-    console.error("No AM.dat");
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "No AM.dat" }),
-    };
+    classData = data;
   }
-
-  // Get user and license data
-  let userData, licenseData, classData;
-  userData = await userDataresponse.Body.transformToString();
-  licenseData = await licenseDataresponse.Body.transformToString();
-  classData = await classDataresponse.Body.transformToString();
-
-  // Split by row
-  userData = userData.split("\n");
-  licenseData = licenseData.split("\n");
-  classData = classData.split("\n");
 
   // Safe array field access helper
   function getField(line: string | undefined, index: number): string {
@@ -210,7 +215,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Check if callsign found
-  if (row === -1 && callsign !== "M0RSE") {
+  if (row === -1 && !DEMO_CALLSIGNS.includes(callsign)) {
     return {
       statusCode: 404,
       body: JSON.stringify({ error: "Call sign not found." }),
@@ -220,6 +225,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Extract matching user data with bounds checking
   let firstName = getField(userData[row], 8);
   let lastName = getField(userData[row], 10);
+  // Clubs, businesses and government licensees have no personal name on the
+  // record, only an entity name.
+  let entityName = getField(userData[row], 7);
   let addressZip = getField(userData[row], 18).substring(0, 5);
   let frn = getField(userData[row], 22);
 
@@ -243,15 +251,24 @@ export async function handler(event: APIGatewayProxyEventV2) {
     }
   }
 
-  // Seeded example, ZIP: 02720
-  if (callsign == "M0RSE") {
+  // A service with a single license class reports the service itself instead
+  // of an operator class.
+  if (service.privilegesValue) {
+    privileges = service.privilegesValue;
+  }
+
+  // Seeded examples, ZIP: 02720
+  if (DEMO_CALLSIGNS.includes(callsign)) {
     firstName = "Samuel";
     lastName = "Morse";
     addressZip = "02720";
     frn = "0123456789";
     grantDate = new Date();
-    expireDate = new Date(grantDate.setFullYear(grantDate.getFullYear() + 10));
-    privileges = "T";
+    // setFullYear mutates its receiver, so expireDate is derived from a copy
+    // to keep the grant date where it is.
+    expireDate = new Date(grantDate);
+    expireDate.setFullYear(expireDate.getFullYear() + 10);
+    privileges = service.privilegesValue ?? "T";
   }
 
   // Check if zipcode matches
@@ -272,7 +289,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   };
 
   let id = "";
-  let name = firstName + " " + lastName;
+  let name = [firstName, lastName].filter(Boolean).join(" ") || entityName;
   privileges = classMap[privileges] || privileges;
 
   // Load certificate secrets
@@ -294,6 +311,9 @@ export async function handler(event: APIGatewayProxyEventV2) {
       },
       {
         serialNumber: frn,
+        // The model's description covers amateur licenses; other services
+        // override it so VoiceOver and Wallet's pass list read correctly.
+        description: service.description,
       },
     );
   } catch (error) {
@@ -327,7 +347,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
 
   pass.secondaryFields.push({
     key: "privileges",
-    label: "PRIVILEGES",
+    label: service.privilegesLabel,
     value: privileges,
   });
 
@@ -413,6 +433,8 @@ export async function handler(event: APIGatewayProxyEventV2) {
       frn,
       name,
       privileges,
+      privilegesLabel: service.privilegesLabel,
+      service: service.id,
       grantDate,
       expireDate,
     }),

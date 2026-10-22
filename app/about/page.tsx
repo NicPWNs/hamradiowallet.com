@@ -36,13 +36,13 @@ export default function About() {
           <h1 className="text-3xl font-bold mb-6">About HAMRadioWallet.com</h1>
           <p className="mb-4">
             HAMRadioWallet.com is a simple web application that allows FCC
-            Amateur Radio operators to add their license credentials to Apple
-            Wallet and Google Wallet for convenient digital access.
+            Amateur Radio and GMRS licensees to add their license credentials to
+            Apple Wallet and Google Wallet for convenient digital access.
           </p>
           <p className="mb-4">
-            Simply enter your amateur radio callsign and 5-digit ZIP code, and
-            the app will generate a digital pass that can be stored in your
-            mobile device&apos;s wallet.
+            Simply enter your amateur radio or GMRS callsign and 5-digit ZIP
+            code, and the app will generate a digital pass that can be stored in
+            your mobile device&apos;s wallet.
           </p>
           <p className="mb-6">
             Compatible with both iOS (Apple Wallet) and Android (Google Wallet)

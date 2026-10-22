@@ -1,36 +1,39 @@
 import { Resource } from "sst";
+import { SERVICES } from "./services";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 let AdmZip = require("adm-zip");
 
 const client = new S3Client({});
 
 export async function handler() {
+  const bucketName = Resource.DataBucket.name;
+
   try {
-    let url = "https://data.fcc.gov/download/pub/uls/complete/l_amat.zip";
+    // Pull each service's archive one at a time. They are large (the amateur
+    // one is ~200 MB compressed), so holding only one in memory at a time
+    // keeps the job inside its memory limit.
+    for (const service of SERVICES) {
+      const response = await fetch(service.url);
+      if (!response.ok) {
+        console.log("HTTP error! status:", response.status, service.url);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const zipBuffer = Buffer.from(await response.arrayBuffer());
+      const zip = new AdmZip(zipBuffer);
+      const zipEntries = zip.getEntries();
 
-    const filesToKeep = ["EN.dat", "HD.dat", "AM.dat"];
-    const bucketName = Resource.DataBucket.name;
+      for (const entry of zipEntries) {
+        if (service.files.includes(entry.entryName)) {
+          const fileContent = zip.readFile(entry);
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.log("HTTP error! status:", response.status);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const zipBuffer = Buffer.from(await response.arrayBuffer());
-    const zip = new AdmZip(zipBuffer);
-    const zipEntries = zip.getEntries();
+          const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: service.prefix + entry.entryName,
+            Body: fileContent,
+          });
 
-    for (const entry of zipEntries) {
-      if (filesToKeep.includes(entry.entryName)) {
-        const fileContent = zip.readFile(entry);
-
-        const command = new PutObjectCommand({
-          Bucket: bucketName,
-          Key: entry.entryName,
-          Body: fileContent,
-        });
-
-        await client.send(command);
+          await client.send(command);
+        }
       }
     }
 

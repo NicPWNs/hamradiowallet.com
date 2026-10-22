@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { UAParser } from "ua-parser-js";
 import CardFlip from "react-card-flip";
+import { serviceForCallsign } from "@/src/services";
 import React, { useState, useEffect } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,6 +38,7 @@ export default function Home() {
   const [frn, setFrn] = useState("");
   const [name, setName] = useState("");
   const [privileges, setPrivileges] = useState("");
+  const [privilegesLabel, setPrivilegesLabel] = useState("");
   const [grantDate, setGrantDate] = useState("");
   const [expireDate, setExpireDate] = useState("");
   const [deviceType, setDeviceType] = useState("");
@@ -57,9 +59,9 @@ export default function Home() {
     setCallsignFound("");
     setZipcodeFound("");
 
-    // Callsign input validation
-    const callSignRegex = /^(?:[KNWM]|A[A-L]|[KNW][A-Z])[0-9][A-Z]{1,3}$/;
-    if (!callSignRegex.test(callSign)) {
+    // Callsign input validation. Amateur and GMRS call signs have distinct
+    // formats, so a valid call sign resolves to exactly one radio service.
+    if (!serviceForCallsign(callSign)) {
       setCallSignError("Invalid FCC Call Sign");
       return;
     } else {
@@ -95,6 +97,7 @@ export default function Home() {
       setFrn(body.frn);
       setName(body.name);
       setPrivileges(body.privileges);
+      setPrivilegesLabel(body.privilegesLabel);
       setGrantDate(
         new Date(body.grantDate).toLocaleDateString("en-US", options)
       );
@@ -104,7 +107,9 @@ export default function Home() {
       setPasskitUrl(
         `https://${env}.hamradiowallet.com/get_pass?id=${body.id}&callsign=${
           body.callsign
-        }&privileges=${body.privileges}&name=${body.name}&frn=${
+        }&privileges=${body.privileges}&privilegesLabel=${
+          body.privilegesLabel
+        }&name=${body.name}&frn=${
           body.frn
         }&grantDate=${new Date(body.grantDate).toLocaleDateString(
           "en-US",
@@ -220,7 +225,7 @@ export default function Home() {
                       day: "numeric",
                     };
                     setPasskitUrl(
-                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&name=${name}&frn=${frn}&grantDate=${new Date(
+                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&privilegesLabel=${privilegesLabel}&name=${name}&frn=${frn}&grantDate=${new Date(
                         grantDate
                       ).toLocaleDateString(
                         "en-US",
@@ -255,7 +260,7 @@ export default function Home() {
                       day: "numeric",
                     };
                     setPasskitUrl(
-                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&name=${name}&frn=${frn}&grantDate=${new Date(
+                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&privilegesLabel=${privilegesLabel}&name=${name}&frn=${frn}&grantDate=${new Date(
                         grantDate
                       ).toLocaleDateString(
                         "en-US",
@@ -361,7 +366,7 @@ export default function Home() {
                     whiteSpace: "pre",
                   }}
                 >
-                  {"PRIVILEGES"}
+                  {privilegesLabel ? privilegesLabel : "PRIVILEGES"}
                 </text>
                 <text
                   x={15}
@@ -524,7 +529,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {"PRIVILEGES"}
+                  {privilegesLabel ? privilegesLabel : "PRIVILEGES"}
                 </text>
                 <text
                   x={180}
@@ -655,7 +660,7 @@ export default function Home() {
                       callSignError ? "border-red-500" : ""
                     }`}
                     type="text"
-                    placeholder="Enter Your FCC Call Sign"
+                    placeholder="Enter Your Amateur or GMRS Call Sign"
                     value={callSign}
                     onChange={(e) =>
                       setCallSign(

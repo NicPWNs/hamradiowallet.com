@@ -57,7 +57,8 @@ export default $config({
       schedule: "cron(0 0/12 * * ? *)",
       job: {
         handler: "src/cron.handler",
-        timeout: "600 seconds",
+        // Headroom for fetching both services' archives in one run.
+        timeout: "900 seconds",
         memory: "2560 MB",
         link: [dataBucket],
       },
