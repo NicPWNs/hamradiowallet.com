@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "HAMRadioWallet.com",
   description:
-    "An app to add FCC Amateur Radio and GMRS Licenses to Apple Wallet and Google Wallet.",
+    "An app to add FCC Amateur Radio, GMRS, and Canadian Amateur Radio Licenses to Apple Wallet and Google Wallet.",
   icons: {
     apple: "/apple-icon.png",
     icon: "/icon.png",

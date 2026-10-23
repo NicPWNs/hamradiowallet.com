@@ -19,6 +19,30 @@ export async function handler(event: APIGatewayProxyEventV2) {
   const expirationDate = event.queryStringParameters?.expirationDate;
   const os = event.queryStringParameters?.os;
 
+  // The three auxiliary rows, whose labels and values differ per radio
+  // service. They keep the text module ids the card template already points
+  // at, so a pass saved to Google Wallet before this went out still renders.
+  // The legacy FCC parameters above are the fallback for links built by a
+  // browser still running the previous bundle.
+  const aux = [
+    {
+      id: "frn",
+      header:
+        event.queryStringParameters?.aux0Label || "FCC Registration Number",
+      body: event.queryStringParameters?.aux0 ?? frn,
+    },
+    {
+      id: "grant_date",
+      header: event.queryStringParameters?.aux1Label || "GRANT DATE",
+      body: event.queryStringParameters?.aux1 ?? grantDate,
+    },
+    {
+      id: "expiration_date",
+      header: event.queryStringParameters?.aux2Label || "EXPIRATION DATE",
+      body: event.queryStringParameters?.aux2 ?? expirationDate,
+    },
+  ];
+
   // Check for id parameter
   if (!id) {
     return {
@@ -157,21 +181,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
                 header: privilegesLabel || "PRIVILEGES",
                 body: privileges,
               },
-              {
-                id: "grant_date",
-                header: "GRANT DATE",
-                body: grantDate,
-              },
-              {
-                id: "expiration_date",
-                header: "EXPIRATION DATE",
-                body: expirationDate,
-              },
-              {
-                id: "frn",
-                header: "FCC Registration Number",
-                body: frn,
-              },
+              ...aux,
             ],
             barcode: {
               type: "QR_CODE",

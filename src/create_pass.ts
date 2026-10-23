@@ -1,6 +1,7 @@
 import { Resource } from "sst";
 import { PKPass } from "passkit-generator";
-import { serviceForCallsign } from "./services";
+import { lookupLicensee } from "./lookup";
+import { serviceForCallsign, normalizePostal } from "./services";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import {
   S3Client,
@@ -11,11 +12,6 @@ import {
 
 // Initialize S3 client
 const s3 = new S3Client({});
-
-// Seeded examples so the site can be tried without a license: M0RSE for
-// amateur, MORS001 for GMRS. The FCC issues neither prefix in those services,
-// so they cannot collide with a real call sign.
-const DEMO_CALLSIGNS = ["M0RSE", "MORS001"];
 
 export async function handler(event: APIGatewayProxyEventV2) {
   // Get request parameters
@@ -48,249 +44,80 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Server-side zipcode validation
-  const zipcodeRegex = /^\d{5}$/;
-  if (!zipcodeRegex.test(zipcode)) {
+  // Server-side address code validation. The United States uses a five digit
+  // ZIP code and Canada a six character postal code, so the expected format
+  // comes from the service.
+  const postal = normalizePostal(service, zipcode);
+  if (!service.postalRegex.test(postal)) {
     return {
       statusCode: 422,
       body: JSON.stringify({ message: "Provided 'zipcode' is malformed." }),
     };
   }
 
-  // Read one of this service's .dat files from the data bucket and split it
-  // into rows. The cron job stores each service's files under its own prefix.
-  const dataPrefix = service.prefix;
-  async function readData(name: string): Promise<string[] | null> {
-    const response = await s3.send(
-      new GetObjectCommand({
-        Bucket: Resource.DataBucket.name,
-        Key: dataPrefix + name,
-      }),
-    );
+  // Read every file this service publishes from the data bucket. A service
+  // whose files the cron job has not stored yet reports that plainly instead
+  // of failing as an unexplained server error.
+  const files: { [name: string]: string[] } = {};
+  for (const name of service.files) {
+    try {
+      const response = await s3.send(
+        new GetObjectCommand({
+          Bucket: Resource.DataBucket.name,
+          Key: service.prefix + name,
+        }),
+      );
 
-    if (!response.Body) {
-      return null;
-    }
+      if (!response.Body) {
+        throw new Error("no body");
+      }
 
-    return (await response.Body.transformToString()).split("\n");
-  }
-
-  // Get EN.dat file - User Data
-  const userData = await readData("EN.dat");
-
-  // Check EN.dat - User Data
-  if (!userData) {
-    console.error("No EN.dat");
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "No EN.dat" }),
-    };
-  }
-
-  // Get HD.dat file - License Data
-  const licenseData = await readData("HD.dat");
-
-  // Check HD.dat - License Data
-  if (!licenseData) {
-    console.error("No HD.dat");
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "No HD.dat" }),
-    };
-  }
-
-  // Get AM.dat file - Class Data. Only amateur licenses carry an operator
-  // class, so services without one are left with no class data to search.
-  let classData: string[] = [];
-  if (service.files.includes("AM.dat")) {
-    const data = await readData("AM.dat");
-
-    // Check AM.dat - Class Data
-    if (!data) {
-      console.error("No AM.dat");
+      files[name] = (await response.Body.transformToString()).split("\n");
+    } catch (error) {
+      console.error(`Failed to read ${service.prefix}${name}:`, error);
       return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "No AM.dat" }),
+        statusCode: 503,
+        body: JSON.stringify({
+          error: `${service.authority} data is not loaded yet.`,
+        }),
       };
     }
-
-    classData = data;
   }
 
-  // Safe array field access helper
-  function getField(line: string | undefined, index: number): string {
-    if (!line) return "";
-    const fields = line.split("|");
-    return fields[index] ?? "";
-  }
-
-  // Parse an FCC "MM/DD/YYYY" date string into a UTC Date
-  function parseDate(dateStr: string): Date {
-    if (!dateStr) return new Date();
-    const [month, day, year] = dateStr.split("/").map(Number);
-    if (isNaN(month) || isNaN(day) || isNaN(year)) return new Date();
-    return new Date(Date.UTC(year, month - 1, day));
-  }
-
-  // A callsign can appear in the FCC data more than once (renewed, re-granted
-  // after a lapse, or previously held by someone else). Collect every entity
-  // (EN.dat) row for the callsign so we can pick the correct license below.
-  const candidateRows: number[] = [];
-  for (let i = 0; i < userData.length; i++) {
-    // Call sign is field index 4
-    if (userData[i].split("|")[4] === callsign) {
-      candidateRows.push(i);
-    }
-  }
-
-  // Map each candidate's Unique System Identifier (USI) to its license (HD.dat)
-  // row so we can inspect license status and expiration. Matching by USI rather
-  // than by line index keeps selection correct even if EN.dat and HD.dat are
-  // not perfectly aligned.
-  const candidateUsis = new Set(
-    candidateRows.map((i) => getField(userData[i], 1)).filter(Boolean),
-  );
-  const licenseByUsi: { [usi: string]: string } = {};
-  if (candidateUsis.size > 0) {
-    for (let i = 0; i < licenseData.length; i++) {
-      const usi = licenseData[i].split("|")[1];
-      if (candidateUsis.has(usi)) {
-        licenseByUsi[usi] = licenseData[i];
-      }
-    }
-  }
-
-  // Choose the best record for the callsign: prefer an Active license
-  // (HD.dat license_status, field index 5 === "A"), then the latest expiration
-  // date. This avoids picking a stale Cancelled/Expired record just because it
-  // sorts last in the file, which produced already-expired passes with wrong
-  // grant/expiration dates.
-  let row = -1;
-  let bestActive = -1;
-  let bestExpire = -Infinity;
-  for (const i of candidateRows) {
-    const usi = getField(userData[i], 1);
-    const licenseLine = licenseByUsi[usi];
-    const active = getField(licenseLine, 5) === "A" ? 1 : 0;
-    const expire = parseDate(getField(licenseLine, 8)).getTime();
-    if (
-      row === -1 ||
-      active > bestActive ||
-      (active === bestActive && expire > bestExpire)
-    ) {
-      row = i;
-      bestActive = active;
-      bestExpire = expire;
-    }
-  }
-
-  // The chosen record's USI and its license (HD.dat) row, matched by USI.
-  const uniqueId = row >= 0 ? getField(userData[row], 1) : "";
-  const licenseLine = licenseByUsi[uniqueId];
-
-  // Find row with matching class data. Prefer the Unique System Identifier
-  // (USI, field 2 in EN/AM -> index 1) and pick the last matching AM row.
-  // If no USI match is found, fall back to matching by callsign (last match).
-  let classRow = -1;
-  // Collect AM rows that match the USI
-  const usiMatches: number[] = [];
-  for (let i = 0; i < classData.length; i++) {
-    const fields = classData[i].split("|");
-    if (fields[1] === uniqueId) {
-      usiMatches.push(i);
-    }
-  }
-
-  if (usiMatches.length > 0) {
-    // Prefer the last USI match (mirrors userData behavior of taking last match)
-    classRow = usiMatches[usiMatches.length - 1];
-  } else if (uniqueId) {
-    // Fallback: search for callsign and prefer the last occurrence
-    for (let i = 0; i < classData.length; i++) {
-      const fields = classData[i].split("|");
-      if (fields.indexOf(callsign) !== -1) {
-        classRow = i;
-      }
-    }
-  }
+  const licensee = lookupLicensee(service, callsign, files);
 
   // Check if callsign found
-  if (row === -1 && !DEMO_CALLSIGNS.includes(callsign)) {
+  if (!licensee) {
     return {
       statusCode: 404,
       body: JSON.stringify({ error: "Call sign not found." }),
     };
   }
 
-  // Extract matching user data with bounds checking
-  let firstName = getField(userData[row], 8);
-  let lastName = getField(userData[row], 10);
-  // Clubs, businesses and government licensees have no personal name on the
-  // record, only an entity name.
-  let entityName = getField(userData[row], 7);
-  let addressZip = getField(userData[row], 18).substring(0, 5);
-  let frn = getField(userData[row], 22);
-
-  // Extract license dates from the chosen record (matched by USI)
-  let grantDate = parseDate(getField(licenseLine, 7));
-  let expireDate = parseDate(getField(licenseLine, 8));
-
-  // Extract class data (privileges). Try to find the callsign in the AM row
-  // and take the following field as the class. Fall back to common indexes
-  // if the callsign isn't present.
-  let privileges = "";
-  if (classRow >= 0 && classData[classRow]) {
-    const fields = classData[classRow].split("|");
-    const csIndex = fields.indexOf(callsign);
-    if (csIndex !== -1 && fields.length > csIndex + 1) {
-      privileges = fields[csIndex + 1];
-    } else if (fields[16]) {
-      privileges = fields[16];
-    } else if (fields[5]) {
-      privileges = fields[5];
-    }
-  }
-
-  // A service with a single license class reports the service itself instead
-  // of an operator class.
-  if (service.privilegesValue) {
-    privileges = service.privilegesValue;
-  }
-
-  // Seeded examples, ZIP: 02720
-  if (DEMO_CALLSIGNS.includes(callsign)) {
-    firstName = "Samuel";
-    lastName = "Morse";
-    addressZip = "02720";
-    frn = "0123456789";
-    grantDate = new Date();
-    // setFullYear mutates its receiver, so expireDate is derived from a copy
-    // to keep the grant date where it is.
-    expireDate = new Date(grantDate);
-    expireDate.setFullYear(expireDate.getFullYear() + 10);
-    privileges = service.privilegesValue ?? "T";
-  }
-
-  // Check if zipcode matches
-  if (zipcode != addressZip) {
+  // ISED publishes no address at all for roughly a quarter of Canadian
+  // certificate holders, so there is nothing to check the request against.
+  // That is a different answer from the call sign being unknown, and the
+  // holder can fix it: ISED rebuilds this file daily.
+  if (licensee.postalCodes.length === 0) {
     return {
-      statusCode: 403,
-      body: JSON.stringify({ error: "ZIP code does not match FCC." }),
+      statusCode: 409,
+      body: JSON.stringify({
+        error: `${service.authority} publishes no ${service.postalLabel.toLowerCase()} for this call sign.`,
+      }),
     };
   }
 
-  let classMap: { [key: string]: string } = {
-    T: "Technician",
-    G: "General",
-    E: "Extra",
-    N: "Novice",
-    A: "Advanced",
-    P: "Technician Plus",
-  };
+  // Check if the address code matches
+  if (!licensee.postalCodes.includes(postal)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({
+        error: `${service.postalLabel} does not match ${service.authority}.`,
+      }),
+    };
+  }
 
-  let id = "";
-  let name = [firstName, lastName].filter(Boolean).join(" ") || entityName;
-  privileges = classMap[privileges] || privileges;
+  const name = licensee.name;
 
   // Load certificate secrets
   const wwdr = Resource.WWDRCert.value;
@@ -310,7 +137,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
         },
       },
       {
-        serialNumber: frn,
+        serialNumber: licensee.serialNumber,
         // The model's description covers amateur licenses; other services
         // override it so VoiceOver and Wallet's pass list read correctly.
         description: service.description,
@@ -324,8 +151,11 @@ export async function handler(event: APIGatewayProxyEventV2) {
     };
   }
 
-  // Set pass fields
-  pass.setExpirationDate(expireDate);
+  // Set pass fields. A Canadian certificate is issued for life, so leaving
+  // the expiration unset is what keeps its pass from ever going stale.
+  if (licensee.expireDate) {
+    pass.setExpirationDate(licensee.expireDate);
+  }
 
   pass.setBarcodes({
     format: "PKBarcodeFormatQR",
@@ -348,31 +178,31 @@ export async function handler(event: APIGatewayProxyEventV2) {
   pass.secondaryFields.push({
     key: "privileges",
     label: service.privilegesLabel,
-    value: privileges,
+    value: licensee.privileges,
   });
 
-  pass.auxiliaryFields.push(
-    {
-      key: "fcc",
-      label: "FCC REGISTRATION NUMBER",
-      value: frn,
-      row: 0,
-    },
-    {
-      key: "granted",
-      label: "GRANT DATE",
-      value: grantDate.toISOString(),
-      dateStyle: "PKDateStyleLong",
-      row: 1,
-    },
-    {
-      key: "expiration",
-      label: "EXPIRATION DATE",
-      value: expireDate.toISOString(),
-      dateStyle: "PKDateStyleLong",
-      row: 1,
-    },
-  );
+  // One wide auxiliary row, then two half rows beside each other.
+  licensee.aux.forEach((field, index) => {
+    const row = index === 0 ? 0 : 1;
+
+    if (field.isoDate) {
+      // Apple formats the date itself, for the holder's locale.
+      pass.auxiliaryFields.push({
+        key: `aux${index}`,
+        label: field.label,
+        value: field.isoDate,
+        dateStyle: "PKDateStyleLong",
+        row,
+      });
+    } else {
+      pass.auxiliaryFields.push({
+        key: `aux${index}`,
+        label: field.label,
+        value: field.value,
+        row,
+      });
+    }
+  });
 
   // Load pass as buffer
   let buffer;
@@ -415,7 +245,7 @@ export async function handler(event: APIGatewayProxyEventV2) {
   }
 
   // Save pass to S3
-  id = crypto.randomUUID();
+  const id = crypto.randomUUID();
   const putCommand = new PutObjectCommand({
     Key: id + ".pkpass",
     Bucket: Resource.PassBucket.name,
@@ -430,13 +260,17 @@ export async function handler(event: APIGatewayProxyEventV2) {
     body: JSON.stringify({
       id,
       callsign,
-      frn,
       name,
-      privileges,
+      privileges: licensee.privileges,
       privilegesLabel: service.privilegesLabel,
       service: service.id,
-      grantDate,
-      expireDate,
+      aux: licensee.aux,
+      // The site read these before the pass carried generic auxiliary rows.
+      // Still sent for the FCC services so a browser running the previous
+      // bundle keeps rendering a correct card.
+      frn: licensee.serialNumber,
+      grantDate: licensee.grantDate,
+      expireDate: licensee.expireDate,
     }),
   };
 }

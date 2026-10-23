@@ -3,7 +3,12 @@
 import Image from "next/image";
 import { UAParser } from "ua-parser-js";
 import CardFlip from "react-card-flip";
-import { serviceForCallsign } from "@/src/services";
+import {
+  serviceForCallsign,
+  normalizePostal,
+  sanitizePostal,
+  postalIsNumeric,
+} from "@/src/services";
 import React, { useState, useEffect } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,13 +40,57 @@ export default function Home() {
   const [zipcodeFound, setZipcodeFound] = useState("");
   const [miscError, setMiscError] = useState("");
   const [callsign, setCallsign] = useState("");
-  const [frn, setFrn] = useState("");
+  const [aux, setAux] = useState<{ label: string; value: string }[]>([]);
   const [name, setName] = useState("");
   const [privileges, setPrivileges] = useState("");
   const [privilegesLabel, setPrivilegesLabel] = useState("");
-  const [grantDate, setGrantDate] = useState("");
-  const [expireDate, setExpireDate] = useState("");
   const [deviceType, setDeviceType] = useState("");
+
+  // The call sign decides which authority to ask and, with it, whether the
+  // second field is a ZIP code or a postal code.
+  const service = serviceForCallsign(callSign);
+  const postalLabel = service ? service.postalLabel : "ZIP Code";
+
+  // Save-to-Wallet link. Defaults to what is in state, which is what the
+  // card buttons want; handleSubmit passes the response body instead,
+  // before state has caught up.
+  const walletUrl = (
+    os: string,
+    pass: {
+      id: string;
+      callsign: string;
+      privileges: string;
+      privilegesLabel: string;
+      name: string;
+      aux: { label: string; value: string }[];
+    } = { id, callsign, privileges, privilegesLabel, name, aux }
+  ) => {
+    const fields: [string, string][] = [
+      ["id", pass.id],
+      ["callsign", pass.callsign],
+      ["privileges", pass.privileges],
+      ["privilegesLabel", pass.privilegesLabel],
+      ["name", pass.name],
+    ];
+
+    // The three auxiliary rows differ per radio service, so they travel as
+    // generic label/value pairs.
+    pass.aux.forEach((field, index) => {
+      fields.push([`aux${index}Label`, field.label]);
+      fields.push([`aux${index}`, field.value]);
+    });
+
+    fields.push(["os", os]);
+
+    // Everything is encoded: licensee names and Canadian qualifications
+    // contain spaces, and an entity name can contain an ampersand, which
+    // would otherwise cut the query short.
+    const query = fields
+      .map(([key, value]) => `${key}=${encodeURIComponent(value ?? "")}`)
+      .join("&");
+
+    return `https://${env}.hamradiowallet.com/get_pass?${query}`;
+  };
 
   // Rotational card jiggle
   const cardJiggle = (delay = 500) => {
@@ -58,20 +107,21 @@ export default function Home() {
     // Reset error messages
     setCallsignFound("");
     setZipcodeFound("");
+    setMiscError("");
 
-    // Callsign input validation. Amateur and GMRS call signs have distinct
-    // formats, so a valid call sign resolves to exactly one radio service.
-    if (!serviceForCallsign(callSign)) {
-      setCallSignError("Invalid FCC Call Sign");
+    // Callsign input validation. Each authority uses call sign formats the
+    // others do not, so a valid call sign resolves to exactly one service.
+    if (!service) {
+      setCallSignError("Invalid Call Sign");
       return;
     } else {
       setCallSignError("");
     }
 
-    // Zipcode input validation
-    const zipCodeRegex = /^\d{5}$/;
-    if (!zipCodeRegex.test(zipCode)) {
-      setZipCodeError("Invalid ZIP Code");
+    // Address code validation, in whichever format that service uses.
+    const postal = normalizePostal(service, zipCode);
+    if (!service.postalRegex.test(postal)) {
+      setZipCodeError(`Invalid ${service.postalLabel}`);
       return;
     } else {
       setZipCodeError("");
@@ -80,54 +130,40 @@ export default function Home() {
     // Wait for create_pass API response
     setIsLoading(true);
     const response = await fetch(
-      `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${zipCode}&os=${deviceType}`
+      `https://${env}.hamradiowallet.com/create_pass?callsign=${callSign}&zipcode=${postal}&os=${deviceType}`
     );
 
     // Result based on API status code
     if (response.status === 200) {
       const body = await response.json();
 
-      const options: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
       setId(body.id);
       setCallsign(body.callsign);
-      setFrn(body.frn);
       setName(body.name);
       setPrivileges(body.privileges);
       setPrivilegesLabel(body.privilegesLabel);
-      setGrantDate(
-        new Date(body.grantDate).toLocaleDateString("en-US", options)
-      );
-      setExpireDate(
-        new Date(body.expireDate).toLocaleDateString("en-US", options)
-      );
-      setPasskitUrl(
-        `https://${env}.hamradiowallet.com/get_pass?id=${body.id}&callsign=${
-          body.callsign
-        }&privileges=${body.privileges}&privilegesLabel=${
-          body.privilegesLabel
-        }&name=${body.name}&frn=${
-          body.frn
-        }&grantDate=${new Date(body.grantDate).toLocaleDateString(
-          "en-US",
-          options
-        )}&expirationDate=${new Date(body.expireDate).toLocaleDateString(
-          "en-US",
-          options
-        )}&os=${deviceType}`
-      );
+      setAux(body.aux);
+      setPasskitUrl(walletUrl(deviceType, body));
 
       setFlip(false);
       setCardAnimation(false);
       cardJiggle(1000);
     } else if (response.status === 403) {
-      setZipcodeFound("ZIP Code Does Not Match FCC");
+      setZipcodeFound(
+        `${service.postalLabel} Does Not Match ${service.authority}`
+      );
       setIsLoading(false);
     } else if (response.status === 404) {
       setCallsignFound("Call Sign Not Found");
+      setIsLoading(false);
+    } else if (response.status === 409) {
+      // Listed, but with no address published to check the request against.
+      setZipcodeFound(
+        `No ${service.postalLabel} On File At ${service.authority}`
+      );
+      setIsLoading(false);
+    } else if (response.status === 503) {
+      setMiscError("License Data Is Loading. Try Again Soon.");
       setIsLoading(false);
     } else {
       setMiscError("Something Broke. Try Again.");
@@ -191,7 +227,7 @@ export default function Home() {
         )}
         {!show && flip && (
           <h1 className="mb-5 text-lg text-blue-400 font-italic">
-            Enter your FCC details.
+            Enter your license details.
           </h1>
         )}
         {show && (
@@ -219,21 +255,7 @@ export default function Home() {
                   onClick={(e) => {
                     e.preventDefault();
                     setDeviceType("Android");
-                    const options: Intl.DateTimeFormatOptions = {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    };
-                    setPasskitUrl(
-                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&privilegesLabel=${privilegesLabel}&name=${name}&frn=${frn}&grantDate=${new Date(
-                        grantDate
-                      ).toLocaleDateString(
-                        "en-US",
-                        options
-                      )}&expirationDate=${new Date(
-                        expireDate
-                      ).toLocaleDateString("en-US", options)}&os=Android`
-                    );
+                    setPasskitUrl(walletUrl("Android"));
                   }}
                 >
                   Not on an Apple device?
@@ -254,21 +276,7 @@ export default function Home() {
                   onClick={(e) => {
                     e.preventDefault();
                     setDeviceType("iOS");
-                    const options: Intl.DateTimeFormatOptions = {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    };
-                    setPasskitUrl(
-                      `https://${env}.hamradiowallet.com/get_pass?id=${id}&callsign=${callSign}&privileges=${privileges}&privilegesLabel=${privilegesLabel}&name=${name}&frn=${frn}&grantDate=${new Date(
-                        grantDate
-                      ).toLocaleDateString(
-                        "en-US",
-                        options
-                      )}&expirationDate=${new Date(
-                        expireDate
-                      ).toLocaleDateString("en-US", options)}&os=iOS`
-                    );
+                    setPasskitUrl(walletUrl("iOS"));
                   }}
                 >
                   On an Apple device?
@@ -387,7 +395,7 @@ export default function Home() {
                     whiteSpace: "pre",
                   }}
                 >
-                  {"FCC REGISTRATION NUMBER"}
+                  {aux[0] ? aux[0].label : "FCC REGISTRATION NUMBER"}
                 </text>
                 <text
                   x={15}
@@ -397,7 +405,7 @@ export default function Home() {
                     fontSize: 14,
                   }}
                 >
-                  {frn ? frn : "0123456789"}
+                  {aux[0] ? aux[0].value : "0123456789"}
                 </text>
                 <text
                   x={15}
@@ -408,7 +416,7 @@ export default function Home() {
                     whiteSpace: "pre",
                   }}
                 >
-                  {"GRANT DATE"}
+                  {aux[1] ? aux[1].label : "GRANT DATE"}
                 </text>
                 <text
                   x={15}
@@ -418,7 +426,7 @@ export default function Home() {
                     fontSize: 14,
                   }}
                 >
-                  {grantDate ? grantDate : "September 29, 2024"}
+                  {aux[1] ? aux[1].value : "September 29, 2024"}
                 </text>
                 <text
                   x={160}
@@ -429,7 +437,7 @@ export default function Home() {
                     whiteSpace: "pre",
                   }}
                 >
-                  {"EXPIRATION DATE"}
+                  {aux[2] ? aux[2].label : "EXPIRATION DATE"}
                 </text>
                 <text
                   x={160}
@@ -439,7 +447,7 @@ export default function Home() {
                     fontSize: 14,
                   }}
                 >
-                  {expireDate ? expireDate : "September 29, 2034"}
+                  {aux[2] ? aux[2].value : "September 29, 2034"}
                 </text>
                 <path
                   stroke="transparent"
@@ -557,7 +565,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {"GRANT DATE"}
+                  {aux[1] ? aux[1].label : "GRANT DATE"}
                 </text>
                 <text
                   x={15}
@@ -567,7 +575,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {grantDate ? grantDate : "September 29, 2024"}
+                  {aux[1] ? aux[1].value : "September 29, 2024"}
                 </text>
                 <text
                   x={180}
@@ -577,7 +585,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {"EXPIRATION DATE"}
+                  {aux[2] ? aux[2].label : "EXPIRATION DATE"}
                 </text>
                 <text
                   x={180}
@@ -587,7 +595,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {expireDate ? expireDate : "September 29, 2034"}
+                  {aux[2] ? aux[2].value : "September 29, 2034"}
                 </text>
                 <path
                   d="M15-210h270v.5H15z"
@@ -605,7 +613,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {"FCC REGISTRATION NUMBER"}
+                  {aux[0] ? aux[0].label : "FCC REGISTRATION NUMBER"}
                 </text>
                 <text
                   x={15}
@@ -615,7 +623,7 @@ export default function Home() {
                     fontSize: 12,
                   }}
                 >
-                  {frn ? frn : "0123456789"}
+                  {aux[0] ? aux[0].value : "0123456789"}
                 </text>
                 <path
                   stroke="transparent"
@@ -660,7 +668,7 @@ export default function Home() {
                       callSignError ? "border-red-500" : ""
                     }`}
                     type="text"
-                    placeholder="Enter Your Amateur or GMRS Call Sign"
+                    placeholder="Enter Your Call Sign"
                     value={callSign}
                     onChange={(e) =>
                       setCallSign(
@@ -677,19 +685,18 @@ export default function Home() {
                 </div>
                 <div className="mb-6">
                   <label className="block mb-2 font-bold text-gray-700">
-                    ZIP Code
+                    {postalLabel}
                   </label>
                   <input
                     className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                       zipCodeError ? "border-red-500" : ""
                     }`}
-                    type="number"
-                    placeholder="Enter Your FCC ZIP Code"
+                    type="text"
+                    inputMode={postalIsNumeric(service) ? "numeric" : "text"}
+                    placeholder={`Enter Your ${postalLabel}`}
                     value={zipCode}
                     onChange={(e) =>
-                      setZipCode(
-                        e.target.value.toString().replace(/[^0-9]/g, "")
-                      )
+                      setZipCode(sanitizePostal(service, e.target.value))
                     }
                     disabled={isLoading}
                   />
