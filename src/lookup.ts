@@ -20,7 +20,10 @@ export interface Licensee {
   name: string;
   // Short value for the pass's secondary field.
   privileges: string;
-  // Stable unique value for the pass serial number.
+  // The call sign, which becomes the pass serial number. Apple identifies an
+  // installed pass by its type and serial, so a holder of two licenses needs
+  // two serials: anything naming the person instead of the license makes the
+  // second pass replace the first.
   serialNumber: string;
   // Normalized address codes that satisfy the holder check. Empty when the
   // authority publishes no address for this call sign, which is not the same
@@ -221,7 +224,7 @@ function lookupFcc(
   return {
     name: [firstName, lastName].filter(Boolean).join(" ") || entityName,
     privileges: FCC_CLASSES[privileges] || privileges,
-    serialNumber: frn,
+    serialNumber: callsign,
     postalCodes: [
       normalizePostal(service, getField(userData[row], 18).substring(0, 5)),
     ].filter((code) => service.postalRegex.test(code)),
@@ -292,8 +295,6 @@ function lookupIsed(
   return {
     name,
     privileges: highest,
-    // ISED issues no registration number, and one row per call sign makes the
-    // call sign itself a stable unique serial.
     serialNumber: callsign,
     // A holder whose own address is withheld can still be checked against
     // their club's, which is the only other address on the record.
@@ -313,12 +314,12 @@ function lookupIsed(
 }
 
 // The seeded example for a service, standing in for a real record.
-function demoLicensee(service: Service): Licensee {
+function demoLicensee(service: Service, callsign: string): Licensee {
   if (service.format === "ised-delim") {
     return {
       name: "Samuel Morse",
       privileges: "Basic",
-      serialNumber: "VA0MRS",
+      serialNumber: callsign,
       postalCodes: ["A1A1A1"],
       aux: [
         { label: "ALL QUALIFICATIONS", value: "Basic" },
@@ -337,7 +338,7 @@ function demoLicensee(service: Service): Licensee {
   return {
     name: "Samuel Morse",
     privileges: service.privilegesValue ?? "Technician",
-    serialNumber: "0123456789",
+    serialNumber: callsign,
     postalCodes: ["02720"],
     aux: [
       { label: "FCC REGISTRATION NUMBER", value: "0123456789" },
@@ -365,7 +366,7 @@ export function lookupLicensee(
   files: { [name: string]: string[] },
 ): Licensee | null {
   if (DEMO_CALLSIGNS[callsign] === service.id) {
-    return demoLicensee(service);
+    return demoLicensee(service, callsign);
   }
 
   return service.format === "ised-delim"

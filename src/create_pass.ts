@@ -266,9 +266,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
       service: service.id,
       aux: licensee.aux,
       // The site read these before the pass carried generic auxiliary rows.
-      // Still sent for the FCC services so a browser running the previous
-      // bundle keeps rendering a correct card.
-      frn: licensee.serialNumber,
+      // Still sent so a browser running the previous bundle keeps rendering a
+      // correct card: that bundle predates Canada and reads the first row,
+      // which the FCC readers fill with the registration number.
+      frn: licensee.aux[0]?.value,
       grantDate: licensee.grantDate,
       expireDate: licensee.expireDate,
     }),
