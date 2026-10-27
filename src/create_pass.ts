@@ -13,7 +13,43 @@ import {
 // Initialize S3 client
 const s3 = new S3Client({});
 
+// A proxy response, plus the two values only the success path knows. The
+// handler strips them before returning, so they never reach the client.
+interface Outcome {
+  statusCode: number;
+  body: string;
+  serial?: string;
+  id?: string;
+}
+
 export async function handler(event: APIGatewayProxyEventV2) {
+  const started = Date.now();
+  const { serial, id, ...response } = await respond(event);
+
+  // One line per request, so a report can be traced without asking the holder
+  // to reproduce it. The call sign is the only request value kept: it is
+  // public, and it is what names the license in a bug report. The ZIP or
+  // postal code is deliberately left out, since it is the secret that proves
+  // the holder is who they say.
+  console.log(
+    JSON.stringify({
+      event: "create_pass",
+      status: response.statusCode,
+      callsign: event.queryStringParameters?.callsign,
+      // A pure function of the call sign, so reading it back here cannot
+      // disagree with the service the lookup actually used.
+      service: serviceForCallsign(event.queryStringParameters?.callsign ?? "")
+        ?.id,
+      serial,
+      id,
+      ms: Date.now() - started,
+    }),
+  );
+
+  return response;
+}
+
+async function respond(event: APIGatewayProxyEventV2): Promise<Outcome> {
   // Get request parameters
   const callsign = event.queryStringParameters?.callsign;
   const zipcode = event.queryStringParameters?.zipcode;
@@ -257,6 +293,10 @@ export async function handler(event: APIGatewayProxyEventV2) {
   // Success
   return {
     statusCode: 200,
+    // Logged, not sent: the serial is the pass's identity, and the id ties
+    // this line to the get_pass line written if the holder taps Add to Wallet.
+    serial: licensee.serialNumber,
+    id,
     body: JSON.stringify({
       id,
       callsign,

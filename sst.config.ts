@@ -37,6 +37,10 @@ export default $config({
           allowMethods: ["GET"],
           allowOrigins: ["https://hamradiowallet.com"],
         },
+        // These logs hold call signs, which are public but still name a
+        // person in the FCC and ISED databases. A month is long enough to
+        // trace a report and short enough not to keep them indefinitely.
+        accessLog: { retention: "1 month" },
       });
 
       api.route("GET /create_pass", {
@@ -45,11 +49,13 @@ export default $config({
         memory: "2560 MB",
         timeout: "60 seconds",
         copyFiles: [{ from: "src/hamradiowallet.pass" }],
+        logging: { retention: "1 month" },
       });
 
       api.route("GET /get_pass", {
         link: [passBucket, clientEmail, privateKey],
         handler: "src/get_pass.handler",
+        logging: { retention: "1 month" },
       });
     }
 

@@ -8,6 +8,27 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 const s3 = new S3Client({});
 
 export async function handler(event: APIGatewayProxyEventV2) {
+  const started = Date.now();
+  const response = await respond(event);
+
+  // The other half of the create_pass line. A pass id shows up here only when
+  // the holder taps Add to Wallet, which is what tells a pass that was never
+  // installed apart from one that was installed and then replaced.
+  console.log(
+    JSON.stringify({
+      event: "get_pass",
+      status: response.statusCode,
+      id: event.queryStringParameters?.id,
+      callsign: event.queryStringParameters?.callsign,
+      os: event.queryStringParameters?.os,
+      ms: Date.now() - started,
+    }),
+  );
+
+  return response;
+}
+
+async function respond(event: APIGatewayProxyEventV2) {
   // Get request parameter
   const id = event.queryStringParameters?.id;
   const callsign = event.queryStringParameters?.callsign;
